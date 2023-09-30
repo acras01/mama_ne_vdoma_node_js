@@ -11,6 +11,7 @@ async function bootstrap() {
     .setTitle('Mama ne vdoma')
     .setDescription('Mama ne vdoma API description')
     .setVersion('0.0.1')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);

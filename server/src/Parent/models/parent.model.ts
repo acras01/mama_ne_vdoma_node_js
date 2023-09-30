@@ -7,7 +7,7 @@ export class Location {
   type: string;
 
   @prop({ required: true })
-  coordinates: [[number]];
+  coordinates: number[];
 }
 
 @index({ location: '2dsphere' })
@@ -15,8 +15,8 @@ export class Parent {
   @prop({ required: true, unique: true })
   email!: string;
 
-  @prop({ required: true })
-  password!: string;
+  @prop({ required: false, select: false })
+  password?: string;
 
   @prop({ required: false })
   name?: string;
@@ -34,7 +34,7 @@ export class Parent {
   @prop({ required: false })
   childs?: Child[];
 
-  @prop({ required: false })
+  @prop({ required: false, select: false })
   activationCode?: string;
 
   @prop({ required: false })

@@ -1,8 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 
-export class CreateParentDto {
-  @ApiProperty()
-  email: string;
-  @ApiProperty()
-  password: string;
-}
+export class CreateParentDto extends RegisterDto {}

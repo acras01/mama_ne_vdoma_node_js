@@ -6,5 +6,5 @@ export const getJwtConfig = async (
   configService: ConfigService<IEnv>,
 ): Promise<JwtModuleOptions> => {
   const secret = configService.get('JWT_SECRET');
-  return { global: true, secret, signOptions: { expiresIn: '1month' } };
+  return { global: true, secret, signOptions: { expiresIn: '30d' } };
 };
