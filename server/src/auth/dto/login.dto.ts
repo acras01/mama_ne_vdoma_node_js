@@ -1,3 +1,3 @@
-export class LoginDto {
-    
-}
+import { RegisterDto } from './register.dto';
+
+export class LoginDto extends RegisterDto {}

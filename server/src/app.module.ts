@@ -26,6 +26,7 @@ import { MailModule } from './mail/mail.module';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: getJwtConfig,
+      global: true,
     }),
     MailModule,
   ],

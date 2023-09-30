@@ -4,8 +4,9 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { CreateParentDto } from './dto/create-parent.dto';
 import { MailService } from '../mail/mail.service';
-import { ConfirmAccountDto } from './dto/confirm-account.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { PatchParentDto } from './dto/patch-parent.dto';
+import { ConfirmEmailDto } from '../auth/dto/confirm-email.dto';
 
 export class ParentService {
   constructor(
@@ -13,6 +14,20 @@ export class ParentService {
     private readonly parentModel: ReturnModelType<typeof Parent>,
     private readonly mailService: MailService,
   ) {}
+
+  async findByEmail(email: string) {
+    const findedDoc = await this.parentModel.findOne({ email });
+    if (findedDoc === null) throw new NotFoundException('Email not found');
+    return findedDoc;
+  }
+
+  async findFullInfoByEmail(email: string) {
+    const findedDoc = await this.parentModel
+      .findOne({ email })
+      .populate(['password', 'activationCode']);
+    if (findedDoc === null) throw new NotFoundException('Email not found');
+    return findedDoc;
+  }
 
   async createParent(createParentDto: CreateParentDto) {
     const hash = await bcrypt.hash(createParentDto.password, 10);
@@ -22,23 +37,28 @@ export class ParentService {
       email: createParentDto.email,
       activationCode,
     });
-    const res = await this.mailService.sendConfirmationEmail({
+    await this.mailService.sendConfirmationEmail({
       code: activationCode,
       email: createParentDto.email,
     });
-    console.log(res);
+    return true;
   }
 
-  async confirmAccountByCode(confirmAccountDto: ConfirmAccountDto) {
-    const parent = await this.parentModel.findOne({
-      email: confirmAccountDto.email,
-    });
-    if (parent.activationCode !== confirmAccountDto.code) {
+  async confirmAccountByCode(confirmEmailDto: ConfirmEmailDto) {
+    const parent = await this.findByEmail(confirmEmailDto.email);
+    if (parent.activationCode !== confirmEmailDto.code) {
       throw new BadRequestException('Wrong code');
     }
     parent.isConfirmed = true;
+    parent.activationCode = '';
     await parent.save();
     return true;
+  }
+
+  async updateParent(patchParentDto: PatchParentDto, email: string) {
+    const parent = await this.findByEmail(email);
+    await parent.updateOne(patchParentDto);
+    return await this.findByEmail(email);
   }
 
   private generateFourDigitCode() {
