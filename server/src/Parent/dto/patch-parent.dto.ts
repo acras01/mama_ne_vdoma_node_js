@@ -25,14 +25,4 @@ export class PatchParentDto {
   @IsNotEmpty()
   @IsOptional()
   avatar: string;
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  lon: string;
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  lat: string;
 }

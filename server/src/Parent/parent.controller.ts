@@ -12,6 +12,7 @@ import { ParentService } from 'src/Parent/parent.service';
 import { PatchParentDto } from './dto/patch-parent.dto';
 import { UserData } from 'src/auth/decorators/get-user-from-jwt.decorator';
 import { IJwtData } from '../shared/interfaces/jwt-data.interface';
+import { UpdateGeoDto } from 'src/shared/dto/update-geo.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -27,5 +28,17 @@ export class ParentController {
     @UserData() data: IJwtData,
   ) {
     return await this.parentService.updateParent(patchParentDto, data.email);
+  }
+
+  @Patch('geo')
+  @HttpCode(200)
+  async updateParentGeo(
+    @Body() updateGeoDto: UpdateGeoDto,
+    @UserData() jwtData: IJwtData,
+  ) {
+    return await this.parentService.updateGeoLocation(
+      updateGeoDto,
+      jwtData.email,
+    );
   }
 }

@@ -7,6 +7,7 @@ import { MailService } from '../mail/mail.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PatchParentDto } from './dto/patch-parent.dto';
 import { ConfirmEmailDto } from '../auth/dto/confirm-email.dto';
+import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
 
 export class ParentService {
   constructor(
@@ -53,6 +54,16 @@ export class ParentService {
     parent.activationCode = '';
     await parent.save();
     return true;
+  }
+
+  async updateGeoLocation(updateGeoDto: UpdateGeoDto, email: string) {
+    const parent = await this.findByEmail(email);
+    await parent.updateOne({ location: { type: 'Point', coordinates: [updateGeoDto.lon, updateGeoDto.lat] } });
+    // console.log(parent.location);
+    // parent.location.type = 'Point';
+    // parent.location.coordinates = ;
+    // console.log(parent);
+    // await parent.save();
   }
 
   async updateParent(patchParentDto: PatchParentDto, email: string) {

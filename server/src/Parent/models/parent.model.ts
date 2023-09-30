@@ -7,7 +7,7 @@ export class Location {
   type: string;
 
   @prop({ required: true })
-  coordinates: [number];
+  coordinates: number[];
 }
 
 @index({ location: '2dsphere' })
