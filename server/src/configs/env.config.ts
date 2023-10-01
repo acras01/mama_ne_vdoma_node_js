@@ -1,7 +1,6 @@
 import * as Joi from 'joi';
 
 export interface IEnv {
-  PORT: number;
   MONGO_URL: string;
   JWT_SECRET: string;
   SMTP_USER: string;
@@ -13,7 +12,6 @@ const baseString = Joi.string().required().exist();
 const baseNumber = Joi.number().required().exist();
 
 export const envValidationSchea = Joi.object<IEnv>({
-  PORT: baseNumber,
   MONGO_URL: baseString,
   JWT_SECRET: baseString,
   SMTP_USER: baseString,
