@@ -46,7 +46,7 @@ export class ParentService {
   }
 
   async confirmAccountByCode(confirmEmailDto: ConfirmEmailDto) {
-    const parent = await this.findByEmail(confirmEmailDto.email);
+    const parent = await this.findFullInfoByEmail(confirmEmailDto.email);
     if (parent.activationCode !== confirmEmailDto.code) {
       throw new BadRequestException('Wrong code');
     }
