@@ -1,7 +1,8 @@
 import { prop } from '@typegoose/typegoose';
-import { Parent } from 'src/Parent/models/parent.model';
 
 export class Child {
+  @prop({ required: true })
+  name: string;
   @prop({ required: true })
   age: number;
 
@@ -12,5 +13,5 @@ export class Child {
   note: string;
 
   @prop({ required: true })
-  parent: Parent;
+  parentId: string;
 }

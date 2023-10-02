@@ -1,11 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDefined,
   IsNotEmpty,
+  IsNotEmptyObject,
+  IsObject,
   IsOptional,
   IsString,
   Length,
   Matches,
+  ValidateNested,
 } from 'class-validator';
+import { WeekDto } from 'src/shared/dto/week.dto';
+import { Type } from 'class-transformer';
 
 export class PatchParentDto {
   @ApiProperty()
@@ -25,4 +31,12 @@ export class PatchParentDto {
   @IsNotEmpty()
   @IsOptional()
   avatar: string;
+  @ApiProperty({ type: WeekDto })
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WeekDto)
+  @IsOptional()
+  week: WeekDto;
 }

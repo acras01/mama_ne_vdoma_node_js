@@ -1,6 +1,5 @@
 import { index, prop } from '@typegoose/typegoose';
 import { ValidateNested } from 'class-validator';
-import { Child } from 'src/Childs/models/child.model';
 import { Location } from '../../shared/models/location.model';
 
 @index({ location: '2dsphere' })
@@ -24,9 +23,6 @@ export class Parent {
   @prop({ _id: false, required: false, type: () => [Location] })
   location?: Location;
 
-  @prop({ required: false })
-  childs?: Child[];
-
   @prop({ required: false, select: false })
   activationCode?: string;
 
@@ -38,4 +34,8 @@ export class Parent {
 
   @prop({ required: false })
   isConfirmed: boolean;
+
+  // TODO fix
+  @prop({ required: false })
+  week: unknown;
 }

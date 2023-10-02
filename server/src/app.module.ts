@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './configs/jwt.config';
 import { MailModule } from './mail/mail.module';
+import { ChildModule } from './Childs/child.module';
 
 @Module({
   imports: [
@@ -21,14 +22,15 @@ import { MailModule } from './mail/mail.module';
       inject: [ConfigService],
       useFactory: getMongoConfig,
     }),
-    ParentModule,
-    AuthModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: getJwtConfig,
       global: true,
     }),
+    ParentModule,
+    AuthModule,
     MailModule,
+    ChildModule,
   ],
   controllers: [AppController],
   providers: [AppService],

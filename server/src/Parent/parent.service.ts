@@ -23,6 +23,12 @@ export class ParentService {
     return findedDoc;
   }
 
+  async findById(id: string) {
+    const findedDoc = await this.parentModel.findById({ id });
+    if (findedDoc === null) throw new NotFoundException('Not Found');
+    return findedDoc;
+  }
+
   async findFullInfoByEmail(email: string) {
     const findedDoc = await this.parentModel
       .findOne({ email })

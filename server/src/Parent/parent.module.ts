@@ -8,7 +8,7 @@ import { Location } from '../shared/models/location.model';
 
 @Module({
   controllers: [ParentController],
-  imports: [TypegooseModule.forFeature([Location, Parent]), MailModule],
+  imports: [TypegooseModule.forFeature([Parent]), MailModule],
   providers: [ParentService],
   exports: [ParentService],
 })
