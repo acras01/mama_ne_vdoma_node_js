@@ -22,6 +22,7 @@ import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
 import { AuthGuard } from './guards/auth.guards';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from 'src/mail/dto/reset-password.dto';
+import { ResendCodeDto } from './dto/resend-code.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -51,6 +52,11 @@ export class AuthController {
       }
     } catch (error) {}
     await this.authService.register(registerDto);
+  }
+
+  @Post('resend-code')
+  async resendCode(@Body() resendCodeDto: ResendCodeDto) {
+    await this.parentService.sendConfirmationEmail(resendCodeDto);
   }
 
   @Post('confirm')
