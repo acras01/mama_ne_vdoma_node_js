@@ -24,4 +24,15 @@ export class MailService {
 
     return result;
   }
+
+  async sendPasswordResetCode(sendConfirmationEmail: SendConfirmationEmail) {
+    const result = await this.mailer.sendMail({
+      to: sendConfirmationEmail.email,
+      from: this.from,
+      text: sendConfirmationEmail.code,
+      subject: 'Password reset code',
+    });
+
+    return result;
+  }
 }

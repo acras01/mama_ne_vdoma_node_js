@@ -5,6 +5,8 @@ import { ParentService } from 'src/Parent/parent.service';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
+import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
+import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,5 +48,16 @@ export class AuthService {
 
   async getMe(email: string) {
     return await this.parentService.findByEmail(email);
+  }
+
+  async sendResetPasswordCode(
+    requestPasswordResetDto: RequestPasswordResetDto,
+  ) {
+    await this.parentService.sendPasswordCode(requestPasswordResetDto.email);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    await this.parentService.resetPassword(resetPasswordDto);
+    return true;
   }
 }

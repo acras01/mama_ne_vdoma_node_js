@@ -6,5 +6,11 @@ export class Child {
   age: number;
 
   @prop({ required: true })
+  isMale: boolean;
+
+  @prop({ required: true, default: '' })
+  note: string;
+
+  @prop({ required: true })
   parent: Parent;
 }
