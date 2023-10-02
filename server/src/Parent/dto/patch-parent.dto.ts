@@ -24,5 +24,10 @@ export class PatchParentDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  countryCode: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
   avatar: string;
 }
