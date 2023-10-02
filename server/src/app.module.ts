@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './configs/jwt.config';
 import { MailModule } from './mail/mail.module';
+import { APP_FILTER } from '@nestjs/core';
+import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-array.filter';
 
 @Module({
   imports: [
@@ -31,6 +33,12 @@ import { MailModule } from './mail/mail.module';
     MailModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: ErrorMessageToArrayFilter,
+    },
+  ],
 })
 export class AppModule {}
