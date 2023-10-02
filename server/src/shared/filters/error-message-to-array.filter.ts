@@ -18,7 +18,6 @@ export class ErrorMessageToArrayFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const exceptionResp = exception.getResponse();
-    console.log(exceptionResp);
     const json: IJsonResp = {
       statusCode: exception.getStatus(),
       message: [],
