@@ -9,6 +9,7 @@ import { PatchParentDto } from './dto/patch-parent.dto';
 import { ConfirmEmailDto } from '../auth/dto/confirm-email.dto';
 import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
+import { ResendCodeDto } from '../auth/dto/resend-code.dto';
 
 export class ParentService {
   constructor(
@@ -36,18 +37,24 @@ export class ParentService {
     return findedDoc;
   }
 
+  async sendConfirmationEmail(resendCodeDto: ResendCodeDto) {
+    const activationCode = String(this.generateFourDigitCode());
+    const parent = await this.findFullInfoByEmail(resendCodeDto.email);
+    parent.activationCode = activationCode;
+    await this.mailService.sendConfirmationEmail({
+      code: activationCode,
+      email: resendCodeDto.email,
+    });
+    await parent.save();
+  }
+
   async createParent(createParentDto: CreateParentDto) {
     const hash = await bcrypt.hash(createParentDto.password, 10);
-    const activationCode = String(this.generateFourDigitCode());
     await this.parentModel.create({
       password: hash,
       email: createParentDto.email,
-      activationCode,
     });
-    await this.mailService.sendConfirmationEmail({
-      code: activationCode,
-      email: createParentDto.email,
-    });
+    await this.sendConfirmationEmail({ email: createParentDto.email });
     return true;
   }
 
