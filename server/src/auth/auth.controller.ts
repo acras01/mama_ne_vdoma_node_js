@@ -1,4 +1,4 @@
-import { ParentService } from 'src/Parent/parent.service';
+import { ParentService } from 'src/parent/parent.service';
 import {
   Body,
   Controller,

@@ -1,16 +1,20 @@
 import { prop } from '@typegoose/typegoose';
-import { Parent } from 'src/Parent/models/parent.model';
 
 export class Child {
+  @prop({ required: true })
+  name: string;
   @prop({ required: true })
   age: number;
 
   @prop({ required: true })
   isMale: boolean;
 
-  @prop({ required: true, default: '' })
+  @prop({ required: false, default: '' })
   note: string;
 
   @prop({ required: true })
-  parent: Parent;
+  parentId: string;
+
+  @prop({ required: false })
+  week: unknown;
 }

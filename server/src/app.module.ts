@@ -5,13 +5,15 @@ import { TypegooseModule } from '@m8a/nestjs-typegoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envValidationSchea } from './configs/env.config';
 import { getMongoConfig } from './configs/mongoose.config';
-import { ParentModule } from './Parent/parent.module';
+import { ParentModule } from './parent/parent.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './configs/jwt.config';
 import { MailModule } from './mail/mail.module';
+import { ChildModule } from './child/child.module';
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-array.filter';
+import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filter';
 
 @Module({
   imports: [
@@ -23,14 +25,15 @@ import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-arr
       inject: [ConfigService],
       useFactory: getMongoConfig,
     }),
-    ParentModule,
-    AuthModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: getJwtConfig,
       global: true,
     }),
+    ParentModule,
+    AuthModule,
     MailModule,
+    ChildModule,
   ],
   controllers: [AppController],
   providers: [
@@ -39,6 +42,7 @@ import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-arr
       provide: APP_FILTER,
       useClass: ErrorMessageToArrayFilter,
     },
+    { provide: APP_FILTER, useClass: MongoCastErrorFilter },
   ],
 })
 export class AppModule {}

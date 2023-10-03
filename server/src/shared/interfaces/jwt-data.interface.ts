@@ -1,4 +1,4 @@
 export interface IJwtData {
-  _id: string;
+  id: string;
   email: string;
 }
