@@ -10,10 +10,10 @@ import {
   Matches,
   ValidateNested,
 } from 'class-validator';
-import { WeekDto } from 'src/shared/dto/week.dto';
 import { Type } from 'class-transformer';
+import { WeekDto } from '../../shared/dto/week.dto';
 
-export class PatchParentDto {
+export class UpdateParentDto {
   @ApiProperty()
   @IsString()
   @Matches(/^[a-zA-Z ]+$/gm, { message: 'Must include only letters or space' })

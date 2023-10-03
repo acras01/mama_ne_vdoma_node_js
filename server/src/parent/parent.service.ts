@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateParentDto } from './dto/create-parent.dto';
 import { MailService } from '../mail/mail.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { PatchParentDto } from './dto/patch-parent.dto';
+import { UpdateParentDto } from './dto/update-parent.dto';
 import { ConfirmEmailDto } from '../auth/dto/confirm-email.dto';
 import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
@@ -24,7 +24,7 @@ export class ParentService {
   }
 
   async findById(id: string) {
-    const findedDoc = await this.parentModel.findById({ id });
+    const findedDoc = await this.parentModel.findById(id);
     if (findedDoc === null) throw new NotFoundException('Not Found');
     return findedDoc;
   }
@@ -105,7 +105,7 @@ export class ParentService {
     await parent.save();
   }
 
-  async updateParent(patchParentDto: PatchParentDto, email: string) {
+  async updateParent(patchParentDto: UpdateParentDto, email: string) {
     const parent = await this.findByEmail(email);
     await parent.updateOne(patchParentDto);
     return await this.findByEmail(email);

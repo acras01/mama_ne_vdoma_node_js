@@ -9,9 +9,12 @@ export class Child {
   @prop({ required: true })
   isMale: boolean;
 
-  @prop({ required: true, default: '' })
+  @prop({ required: false, default: '' })
   note: string;
 
   @prop({ required: true })
   parentId: string;
+
+  @prop({ required: false })
+  week: unknown;
 }

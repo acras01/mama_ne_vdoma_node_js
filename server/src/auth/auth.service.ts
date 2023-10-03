@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
-import { ParentService } from 'src/Parent/parent.service';
+import { ParentService } from 'src/parent/parent.service';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';

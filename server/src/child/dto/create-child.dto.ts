@@ -21,8 +21,4 @@ export class CreateChildDto {
   @ApiProperty()
   @IsBoolean()
   isMale: boolean;
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  note: string;
 }

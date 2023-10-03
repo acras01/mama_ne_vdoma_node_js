@@ -5,12 +5,12 @@ import { TypegooseModule } from '@m8a/nestjs-typegoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envValidationSchea } from './configs/env.config';
 import { getMongoConfig } from './configs/mongoose.config';
-import { ParentModule } from './Parent/parent.module';
+import { ParentModule } from './parent/parent.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './configs/jwt.config';
 import { MailModule } from './mail/mail.module';
-import { ChildModule } from './Childs/child.module';
+import { ChildModule } from './child/child.module';
 
 @Module({
   imports: [
