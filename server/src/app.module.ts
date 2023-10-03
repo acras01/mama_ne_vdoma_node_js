@@ -13,6 +13,7 @@ import { MailModule } from './mail/mail.module';
 import { ChildModule } from './child/child.module';
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-array.filter';
+import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filter';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-arr
       provide: APP_FILTER,
       useClass: ErrorMessageToArrayFilter,
     },
+    { provide: APP_FILTER, useClass: MongoCastErrorFilter },
   ],
 })
 export class AppModule {}
