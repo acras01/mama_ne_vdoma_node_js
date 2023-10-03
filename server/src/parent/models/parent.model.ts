@@ -19,6 +19,9 @@ export class Parent {
   @prop({ required: false })
   phone: string;
 
+  @prop({ required: false })
+  countryCode: string;
+
   @ValidateNested({ each: true })
   @prop({ _id: false, required: false, type: () => [Location] })
   location?: Location;

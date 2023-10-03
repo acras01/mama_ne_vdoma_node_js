@@ -30,6 +30,11 @@ export class UpdateParentDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  countryCode: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
   avatar: string;
   @ApiProperty({ type: WeekDto })
   @IsDefined()
