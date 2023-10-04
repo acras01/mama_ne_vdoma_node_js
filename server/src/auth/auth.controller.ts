@@ -43,14 +43,7 @@ export class AuthController {
   @Post('register')
   @ApiCreatedResponse()
   async register(@Body() registerDto: RegisterDto) {
-    try {
-      const user = await this.parentService.findFullInfoByEmail(
-        registerDto.email,
-      );
-      if (!user.isConfirmed) {
-        await user.deleteOne();
-      }
-    } catch (error) {}
+
     await this.authService.register(registerDto);
   }
 

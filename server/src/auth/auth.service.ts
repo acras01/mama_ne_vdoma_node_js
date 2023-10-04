@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { ParentService } from 'src/parent/parent.service';
@@ -23,6 +27,8 @@ export class AuthService {
     );
     if (!isPasswordCorrect)
       throw new UnauthorizedException('Wrong credentials');
+    if (!parent.isConfirmed)
+      throw new BadRequestException('Not confrimed account');
     const jwt = await this.jwtService.sign({
       id: parent._id,
       email: parent.email,
@@ -31,6 +37,18 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
+    try {
+      const user = await this.parentService.findFullInfoByEmail(
+        registerDto.email,
+      );
+      if (!user.isConfirmed) {
+        await user.deleteOne();
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      throw new BadRequestException('Email already taken');
+    }
     return await this.parentService.createParent(registerDto);
   }
 
