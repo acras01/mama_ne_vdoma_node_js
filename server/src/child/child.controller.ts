@@ -6,10 +6,12 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
   UseGuards,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateChildDto } from './dto/create-child.dto';
 import { UserData } from 'src/auth/decorators/get-user-from-jwt.decorator';
@@ -24,7 +26,8 @@ import { UpdateChildDto } from './dto/update-child.dto';
 export class ChildController {
   constructor(
     private readonly childService: ChildService,
-    private readonly parentService: ParentService,
+    @Inject(forwardRef(() => ParentService))
+    private  parentService: ParentService,
   ) {}
 
   @Post()
