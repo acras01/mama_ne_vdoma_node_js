@@ -4,17 +4,25 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { CreateParentDto } from './dto/create-parent.dto';
 import { MailService } from '../mail/mail.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { UpdateParentDto } from './dto/update-parent.dto';
 import { ConfirmEmailDto } from '../auth/dto/confirm-email.dto';
 import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
 import { ResendCodeDto } from '../auth/dto/resend-code.dto';
+import { ChildService } from '../child/child.service';
 
 export class ParentService {
   constructor(
     @InjectModel(Parent)
     private readonly parentModel: ReturnModelType<typeof Parent>,
+    @Inject(forwardRef(() => ChildService))
+    private  childService: ChildService,
     private readonly mailService: MailService,
   ) {}
 
@@ -127,6 +135,13 @@ export class ParentService {
       await parent.deleteOne();
       return true;
     }
+  }
+
+  async deleteAccount(email: string) {
+    const parent = await this.findByEmail(email);
+    await this.childService.deleteChilds(parent.id);
+    await parent.deleteOne();
+    return true;
   }
 
   private generateFourDigitCode() {

@@ -1,13 +1,11 @@
 import { InjectModel } from '@m8a/nestjs-typegoose';
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Child } from './models/child.model';
 import { ReturnModelType } from '@typegoose/typegoose';
-import { ParentService } from 'src/parent/parent.service';
 import { CreateChildDto } from './dto/create-child.dto';
 import { UpdateChildDto } from './dto/update-child.dto';
 
@@ -16,7 +14,6 @@ export class ChildService {
   constructor(
     @InjectModel(Child)
     private readonly childModel: ReturnModelType<typeof Child>,
-    private readonly parentService: ParentService,
   ) {}
 
   async getChilds(parent: string) {
@@ -55,5 +52,10 @@ export class ChildService {
     if (child.parentId !== parentId) throw new ForbiddenException();
     await child.deleteOne();
     return true;
+  }
+
+  async deleteChilds(parentId: string) {
+    const result = await this.childModel.deleteMany({ parentId });
+    return result;
   }
 }
