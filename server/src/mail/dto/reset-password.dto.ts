@@ -1,12 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { SendConfirmationEmail } from './send-confrimation-email.dto';
-import { IsNotEmpty, IsString, IsStrongPassword, Length } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { PasswordDto } from 'src/shared/dto/password.dto'
 
-export class ResetPasswordDto extends SendConfirmationEmail {
+export class ResetPasswordDto extends PasswordDto {
   @ApiProperty()
+  @IsEmail()
   @IsNotEmpty()
+  email: string
+
+  @ApiProperty()
   @IsString()
-  @Length(6, 24)
-  @IsStrongPassword({ minNumbers: 1, minSymbols: 1 })
-  password: string;
+  @IsNotEmpty()
+  code: string
 }
