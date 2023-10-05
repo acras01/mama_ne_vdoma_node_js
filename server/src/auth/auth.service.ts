@@ -43,7 +43,7 @@ export class AuthService {
       );
       if (!user.isConfirmed) {
         await user.deleteOne();
-      } else {
+      } else if(user) {
         throw new Error();
       }
     } catch (error) {
