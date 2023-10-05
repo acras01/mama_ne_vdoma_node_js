@@ -32,6 +32,11 @@ export class ParentService {
     return findedDoc;
   }
 
+  async isEmailAvaliable(email:string){
+    const findedDoc = await this.parentModel.findById(id);
+    return Boolean(findedDoc);
+  }
+
   async findById(id: string) {
     const findedDoc = await this.parentModel.findById(id);
     if (findedDoc === null) throw new NotFoundException('Not Found');

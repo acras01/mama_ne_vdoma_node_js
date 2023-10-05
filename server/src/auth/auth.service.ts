@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly parentService: ParentService,
-  ) {}
+  ) { }
 
   async login(loginDto: LoginDto) {
     const parent = await this.parentService.findFullInfoByEmail(loginDto.email);
@@ -37,18 +37,10 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    try {
-      const user = await this.parentService.findFullInfoByEmail(
-        registerDto.email,
-      );
-      if (!user.isConfirmed) {
-        await user.deleteOne();
-      } else if(user) {
-        throw new Error();
-      }
-    } catch (error) {
-      throw new BadRequestException('Email already taken');
-    }
+    const user = await this.parentService.findFullInfoByEmail(
+      registerDto.email,
+    );
+    if (!await this.parentService.isEmailAvaliable(registerDto.email)) throw new BadRequestException('Email already taken')
     return await this.parentService.createParent(registerDto);
   }
 
