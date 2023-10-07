@@ -5,12 +5,9 @@ export interface IPrepareGeoParams {
 }
 export function PrepareGeoQuery(data: IPrepareGeoParams) {
   const { radius } = data;
-  let newRadius: number;
-  if (radius < 1000) {
-    newRadius = 1000;
-  }
+  let newRadius = radius;
   newRadius += 1000;
-  if (radius > 25000) {
+  if (newRadius > 25000) {
     newRadius = 25000;
   }
   const query = {
