@@ -16,7 +16,7 @@ import { WeekDto } from '../../shared/dto/week.dto';
 export class UpdateParentDto {
   @ApiProperty()
   @IsString()
-  @Matches(/^[a-zA-Z ]+$/gm, { message: 'Must include only letters or space' })
+  @Matches(/^[a-zA-Z -]+$/gm, { message: 'Must include only letters,- or space' })
   @IsNotEmpty()
   @Length(6, 18)
   @IsOptional()

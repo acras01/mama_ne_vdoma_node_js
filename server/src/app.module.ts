@@ -14,6 +14,7 @@ import { ChildModule } from './child/child.module';
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-array.filter';
 import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filter';
+import { GroupModule } from './group/group.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filte
     AuthModule,
     MailModule,
     ChildModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [
