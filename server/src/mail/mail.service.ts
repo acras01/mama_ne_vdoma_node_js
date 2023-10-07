@@ -122,4 +122,14 @@ export class MailService {
     });
     return result;
   }
+
+  async sendChangeEmailCode(email: string, code: string) {
+    const result = await this.mailer.sendMail({
+      to: email,
+      from: this.from,
+      text: `${code}`,
+      subject: 'Change email request',
+    });
+    return result;
+  }
 }

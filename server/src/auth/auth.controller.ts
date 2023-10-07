@@ -23,6 +23,8 @@ import { AuthGuard } from './guards/auth.guards';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from 'src/mail/dto/reset-password.dto';
 import { ResendCodeDto } from './dto/resend-code.dto';
+import { RequestChangeEmail } from './dto/request-change-email.dto';
+import { CodeDto } from './dto/change-email.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -43,7 +45,6 @@ export class AuthController {
   @Post('register')
   @ApiCreatedResponse()
   async register(@Body() registerDto: RegisterDto) {
-
     await this.authService.register(registerDto);
   }
 
@@ -78,5 +79,23 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto);
+  }
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post('change-email-request')
+  async changeEmailRequest(
+    @Body() requestChangeEmail: RequestChangeEmail,
+    @UserData() jwtData: IJwtData,
+  ) {
+    return await this.authService.sendChangeEmailCode(
+      jwtData.id,
+      requestChangeEmail,
+    );
+  }
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post('change-email')
+  async changeEmail(@Body() codeDto: CodeDto, @UserData() jwtData: IJwtData) {
+    return await this.authService.changeEmail(jwtData.email, codeDto.code);
   }
 }

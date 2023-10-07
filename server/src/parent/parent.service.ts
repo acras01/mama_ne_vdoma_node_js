@@ -61,6 +61,9 @@ export class ParentService {
         'activationCode',
         'passwordResetCode',
         'passwordResetCodeExpire',
+        'newEmail',
+        'changeEmailCode',
+        'changeEmailCodeExpire',
       ]);
     if (findedDoc === null) throw new NotFoundException('Email not found');
     return findedDoc;
@@ -126,6 +129,33 @@ export class ParentService {
     parent.passwordResetCodeExpire = date;
     await parent.save();
     return;
+  }
+
+  async sendChangeEmailCode(parentId: string, email: string) {
+    const parent = await this.findById(parentId);
+    if (!parent) return;
+    if (!parent.isConfirmed) return;
+    const code = String(this.generateFourDigitCode());
+    const date = new Date();
+    date.setMinutes(date.getMinutes() + 30);
+    await this.mailService.sendChangeEmailCode(email, code);
+    parent.newEmail = email;
+    parent.changeEmailCode = code;
+    parent.changeEmailCodeExpire = date;
+    await parent.save();
+    return;
+  }
+
+  async changeEmail(email: string, code: string) {
+    const parent = await this.findFullInfoByEmail(email);
+    if (Date.now() > parent.changeEmailCodeExpire.getTime()) {
+      throw new BadRequestException('Expired code');
+    }
+    if (parent.changeEmailCode !== code)
+      throw new BadRequestException('Wrong code');
+    parent.email = parent.newEmail;
+    parent.changeEmailCode = '';
+    await parent.save();
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
