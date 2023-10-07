@@ -35,6 +35,15 @@ export class Parent {
   @prop({ required: false, select: false })
   passwordResetCodeExpire?: Date;
 
+  @prop({ required: false, select: false })
+  newEmail?: string;
+
+  @prop({ required: false, select: false })
+  changeEmailCode?: string;
+
+  @prop({ required: false, select: false })
+  changeEmailCodeExpire?: Date;
+
   @prop({ required: false })
   isConfirmed: boolean;
 
