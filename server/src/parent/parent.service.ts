@@ -17,6 +17,7 @@ import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
 import { ResendCodeDto } from '../auth/dto/resend-code.dto';
 import { ChildService } from '../child/child.service';
 import { GroupService } from '../group/group.service';
+import { BackblazeService } from '../backblaze/backblaze.service';
 
 export class ParentService {
   constructor(
@@ -28,6 +29,7 @@ export class ParentService {
     private mailService: MailService,
     @Inject(forwardRef(() => GroupService))
     private groupService: GroupService,
+    private readonly backblazeService: BackblazeService,
   ) {}
 
   async findByEmail(email: string) {
@@ -172,7 +174,13 @@ export class ParentService {
   }
 
   async updateParent(patchParentDto: UpdateParentDto, email: string) {
+    if (patchParentDto.avatar) {
+      await this.backblazeService.getFileInfo(patchParentDto.avatar);
+    }
     const parent = await this.findByEmail(email);
+    if (parent.avatar) {
+      await this.backblazeService.deleteFile(parent.avatar);
+    }
     await parent.updateOne(patchParentDto);
     return await this.findByEmail(email);
   }
@@ -183,13 +191,14 @@ export class ParentService {
     if (parent === null) {
       return false;
     } else {
-      await parent.deleteOne();
+      await this.deleteAccount(parent.email);
       return true;
     }
   }
 
   async deleteAccount(email: string) {
     const parent = await this.findByEmail(email);
+    if (parent.avatar) await this.backblazeService.deleteFile(parent.avatar);
     await this.groupService.cleanUpAfterDeleteParent(parent.id);
     await this.childService.deleteChilds(parent.id);
     await parent.deleteOne();

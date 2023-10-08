@@ -6,6 +6,9 @@ export interface IEnv {
   SMTP_USER: string;
   SMTP_PASSWORD: string;
   RESET_TOKEN_TTL: number;
+  BB2_SECRET_KEY: string;
+  BB2_SECRET_KEY_NAME: string;
+  BB2_FILES_BUCKET_ID: string;
 }
 
 const baseString = Joi.string().required().exist();
@@ -17,4 +20,7 @@ export const envValidationSchea = Joi.object<IEnv>({
   SMTP_USER: baseString,
   SMTP_PASSWORD: baseString,
   RESET_TOKEN_TTL: baseNumber,
+  BB2_SECRET_KEY: baseString,
+  BB2_SECRET_KEY_NAME: baseString,
+  BB2_FILES_BUCKET_ID: baseString,
 });
