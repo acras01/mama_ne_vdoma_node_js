@@ -72,11 +72,11 @@ export class BackBlazeController {
     });
   }
 
-  @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'File not found' })
-  @Delete(':id')
-  async deleteFileById(@Param('id') id: string) {
-    const result = await this.backblazeService.deleteFile(id);
-    return { status: result };
-  }
+  // @ApiOkResponse()
+  // @ApiNotFoundResponse({ description: 'File not found' })
+  // @Delete(':id')
+  // async deleteFileById(@Param('id') id: string) {
+  //   const result = await this.backblazeService.deleteFile(id);
+  //   return { status: result };
+  // }
 }
