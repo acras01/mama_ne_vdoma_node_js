@@ -174,8 +174,12 @@ export class ParentService {
   }
 
   async updateParent(patchParentDto: UpdateParentDto, email: string) {
-    if (patchParentDto.avatar) {
-      await this.backblazeService.getFileInfo(patchParentDto.avatar);
+    try {
+      if (patchParentDto.avatar) {
+        await this.backblazeService.getFileInfo(patchParentDto.avatar);
+      }
+    } catch (error) {
+      throw new BadRequestException('New File not found')
     }
     const parent = await this.findByEmail(email);
     if (parent.avatar) {
