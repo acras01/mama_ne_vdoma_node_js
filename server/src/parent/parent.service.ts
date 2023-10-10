@@ -182,7 +182,7 @@ export class ParentService {
       throw new BadRequestException('New File not found')
     }
     const parent = await this.findByEmail(email)
-    if (parent.avatar) {
+    if(patchParentDto.avatar && (patchParentDto.avatar !== parent.avatar)){
       await this.backblazeService.deleteFile(parent.avatar)
     }
     await parent.updateOne(patchParentDto)
