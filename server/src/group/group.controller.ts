@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -13,6 +14,8 @@ import { AuthGuard } from '../auth/guards/auth.guards';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UserData } from '../auth/decorators/get-user-from-jwt.decorator';
 import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
+import { UpdateGroupDto } from './dto/update-group.dto';
+import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
 
 @ApiTags('group')
 @ApiBearerAuth()
@@ -102,5 +105,29 @@ export class GroupController {
   async findGroupById(@Param('groupId') groupId: string) {
     const group = await this.groupService.findById(groupId);
     return group;
+  }
+  @Patch('admin/:groupId/:parentId')
+  async changeAdming(
+    @Param('groupId') groupId: string,
+    @Param('parentId') parentId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.changeAdmin(groupId, jwtData.id, parentId);
+  }
+  @Patch('geo/:groupId')
+  async updateGeoGroup(
+    @Param('groupId') groupId: string,
+    @UserData() jwtData: IJwtData,
+    @Body() updateGeoDto: UpdateGeoDto,
+  ) {
+    await this.groupService.updateGroupGeo(groupId, jwtData.id, updateGeoDto);
+  }
+  @Patch(':groupId')
+  async updateGroup(
+    @Param('groupId') groupId: string,
+    @UserData() jwtData: IJwtData,
+    @Body() updateGroupDto: UpdateGroupDto,
+  ) {
+    await this.groupService.updateGroup(groupId, jwtData.id, updateGroupDto);
   }
 }

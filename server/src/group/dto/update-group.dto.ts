@@ -1,7 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsNotEmptyObject, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { WeekDto } from 'src/shared/dto/week.dto';
+import { GroupAgeValidate } from '../validator/age.validator';
 
 export class UpdateGroupDto {
   @ApiProperty()
@@ -18,6 +27,7 @@ export class UpdateGroupDto {
   @IsNotEmpty()
   @IsString()
   @IsOptional()
+  @GroupAgeValidate()
   ages: string;
   @ApiProperty({ type: WeekDto })
   @IsDefined()
