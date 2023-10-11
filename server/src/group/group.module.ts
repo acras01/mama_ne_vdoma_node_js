@@ -11,7 +11,7 @@ import { GroupController } from './group.controller';
   imports: [
     ChildModule,
     forwardRef(() => ParentModule),
-    MailModule,
+    forwardRef(() => MailModule),
     TypegooseModule.forFeature([Group]),
   ],
   controllers: [GroupController],

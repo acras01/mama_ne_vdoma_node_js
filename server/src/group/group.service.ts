@@ -10,13 +10,12 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { InjectModel } from '@m8a/nestjs-typegoose';
 import { Group } from './models/group.model';
 import { ReturnModelType } from '@typegoose/typegoose';
-import { ParentService } from 'src/parent/parent.service';
-import { ChildService } from 'src/child/child.service';
 import { MailService } from '../mail/mail.service';
-import { PrepareGeoQuery } from 'src/shared/helpers/prepare-geo-query-mongo';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { UpdateGroupGeoDt } from './dto/update-group-geo.dto';
-import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
+import { ParentService } from '../parent/parent.service';
+import { ChildService } from '../child/child.service';
+import { PrepareGeoQuery } from 'src/shared/helpers/prepare-geo-query-mongo';
+import { UpdateGroupGeoDto } from './dto/update-group-geo.dto';
 
 @Injectable()
 export class GroupService {
@@ -26,6 +25,7 @@ export class GroupService {
     @Inject(forwardRef(() => ParentService))
     private readonly paretnSerivce: ParentService,
     private readonly childService: ChildService,
+    @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
   ) {}
 
@@ -44,6 +44,7 @@ export class GroupService {
     };
     if (parent.location) newGroup.location = parent.location;
     const group = await this.groupModel.create(newGroup);
+    await this.mailService.groupCreatedNotification(parent.email, group.id);
     return group;
   }
 
@@ -105,21 +106,19 @@ export class GroupService {
     if (group.adminId !== adminId) throw new ForbiddenException('Not an admin');
     const child = await this.childService.findChildById(childId);
     const parentId = child.parentId;
-    console.log(await this.paretnSerivce.findById(child.parentId));
-    console.log('group', group);
-    console.log('child', child);
-    console.log('parentId', parentId);
-    console.log(group.askingJoin);
+    const parent = await this.paretnSerivce.findById(parentId);
     const ask = group.askingJoin.find(
       (ask) => ask.parentId === parentId && ask.childId === childId,
     );
     if (!ask) throw new BadRequestException('Request to join not found');
     if (isAccept) {
       group.members.push({ childId, parentId });
+      await this.mailService.sendGroupInvitationAccept(parent.email, group.id);
+    } else {
+      await this.mailService.sendGroupInvitationReject(parent.email, group.id);
     }
     group.askingJoin = group.askingJoin.filter((el) => el !== ask);
     await group.save();
-    // todo email
   }
   async fullInfo(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
@@ -194,14 +193,14 @@ export class GroupService {
   async updateGroupGeo(
     groupId: string,
     adminId: string,
-    updateGeoDto: UpdateGeoDto,
+    updateGroupGeoDto: UpdateGroupGeoDto,
   ) {
     const group = await this.findById(groupId);
     if (group.adminId !== adminId) throw new ForbiddenException();
     await group.updateOne({
       location: {
         type: 'Point',
-        coordinates: [updateGeoDto.lon, updateGeoDto.lat],
+        coordinates: [updateGroupGeoDto.lon, updateGroupGeoDto.lat],
       },
     });
     return true;

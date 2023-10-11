@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional } from 'class-validator';
 
-export class UpdateGroupGeoDt {
+export class UpdateGroupGeoDto {
   @ApiProperty()
   @IsNumber()
   @IsOptional()

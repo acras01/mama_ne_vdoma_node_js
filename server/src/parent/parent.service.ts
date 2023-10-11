@@ -155,9 +155,13 @@ export class ParentService {
     }
     if (parent.changeEmailCode !== code)
       throw new BadRequestException('Wrong code');
+    const oldEmail = parent.email;
+    const newEmail = parent.newEmail;
     parent.email = parent.newEmail;
     parent.changeEmailCode = '';
+    parent.newEmail = '';
     await parent.save();
+    await this.mailService.sendEmailChanged(newEmail, oldEmail);
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
