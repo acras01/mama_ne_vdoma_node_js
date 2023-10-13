@@ -76,6 +76,7 @@ export class MailService {
     childId: string,
   ) {
     const parent = await this.parentService.findById(parentId);
+    if (!parent.sendingEmails) return;
     const childs = await this.childService.getChilds(parentId);
     const child = await this.childService.findChildById(childId);
     const result = await this.mailer.sendMail({
@@ -121,11 +122,44 @@ export class MailService {
       `,
     });
   }
-  async kickedFromGroupNotification(email: string, groupName: string) {
+  async kickedFromGroupNotification(email: string, groupId: string) {
+    const parent = await this.parentService.findByEmail(email);
+    if (!parent.sendingEmails) return;
+    const group = await this.groupService.findById(groupId);
     const result = await this.mailer.sendMail({
       to: email,
       from: this.from,
-      text: `Kicked from group ${groupName}`,
+      html: `
+      <head>
+      <body>
+      <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
+      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Повідомляємо вас, що ви більше не є учасником наступної групи догляду за дітьми в застосунку &nbsp;<a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
+      <tbody>
+      <tr style="height: 10px;">
+      <td style="width: 100%; height: 10px;">
+      <div style="text-align: center;"><img src="https://static.wixstatic.com/media/ede167_fc3f1143b3b448e492def88f61d6cac5~mv2.jpg" width="800" height="233" alt="" /></div>
+      </td>
+      </tr>
+      <tr style="height: 10px;">
+      <td style="width: 100%; height: 10px; text-align: center;">ID групи: ${group.id}</td>
+      </tr>
+      <tr style="height: 0px;">
+      <td style="width: 100%; height: 0px; text-align: center;">
+      <h2>Назва групи: ${group.name}</h2>
+      </td>
+      </tr>
+      <tr style="height: 0px;">
+      <td style="width: 100%; height: 0px; text-align: center;">Вік дітей: ${group.ages} років</td>
+      </tr>
+      </tbody>
+      </table>
+      <p style="text-align: center;"><span> Ви можете пошукати інші групи у нашому мобільному застосунку та доєднатись до них, щоб вирішити проблему догляду за вашими дітьми. Це можна зробити у застосунку  <strong>Мама не вдома</strong> на вашому мобільному телефоні.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
+      </div>
+      </body>
+      </head>
+      `,
       subject: 'Kicked from group notification',
     });
     return result;
@@ -142,6 +176,8 @@ export class MailService {
   }
 
   async sendEmailChanged(email: string, oldEmail: string) {
+    const parent = await this.parentService.findByEmail(email);
+    if (!parent.sendingEmails) return;
     const result = await this.mailer.sendMail({
       to: oldEmail,
       from: this.from,
@@ -165,6 +201,8 @@ export class MailService {
   }
 
   async sendGroupInvitationReject(email: string, groupId: string) {
+    const parent = await this.parentService.findByEmail(email);
+    if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
     const result = await this.mailer.sendMail({
       to: email,
@@ -201,6 +239,8 @@ export class MailService {
   }
 
   async sendGroupInvitationAccept(email: string, groupId: string) {
+    const parent = await this.parentService.findByEmail(email);
+    if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
     const result = await this.mailer.sendMail({
       to: email,
@@ -237,6 +277,8 @@ export class MailService {
   }
 
   async groupCreatedNotification(email: string, groupId: string) {
+    const parent = await this.parentService.findByEmail(email);
+    if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
     const result = await this.mailer.sendMail({
       to: email,
@@ -275,6 +317,50 @@ export class MailService {
       </head>      
 `,
       subject: 'Accepting group request',
+    });
+    return result;
+  }
+
+  async adminTransferNotification(email: string, groupId: string) {
+    const parent = await this.parentService.findByEmail(email);
+    if (!parent.sendingEmails) return;
+    const group = await this.groupService.findById(groupId);
+    const result = await this.mailer.sendMail({
+      to: email,
+      from: this.from,
+      html: `
+      <head>
+      <body>
+      <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
+      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Вас призначено адміністратором наступної групи догляду за дітьми в застосунку &nbsp;<a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
+      <tbody>
+      <tr style="height: 10px;">
+      <td style="width: 100%; height: 10px;">
+      <div style="text-align: center;"><img src="https://static.wixstatic.com/media/ede167_fc3f1143b3b448e492def88f61d6cac5~mv2.jpg" width="800" height="233" alt="" /></div>
+      </td>
+      </tr>
+      <tr style="height: 10px;">
+      <td style="width: 100%; height: 10px; text-align: center;">ID групи: ${group.id}</td>
+      </tr>
+      <tr style="height: 0px;">
+      <td style="width: 100%; height: 0px; text-align: center;">
+      <h2>Назва групи: ${group.name}</h2>
+      </td>
+      </tr>
+      <tr style="height: 0px;">
+      <td style="width: 100%; height: 0px; text-align: center;">Вік дітей: ${group.ages} років</td>
+      </tr>
+      </tbody>
+      </table>
+      <p style="text-align: center;"><span> Тепер ви можете погоджувати доєднання нових учасників цієї групи та керувати її іншими налаштуваннями. Це можна зробити у застосунку <strong>Мама не вдома</strong> на вашому мобільному телефоні.</span>
+      <br/><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
+      </div>
+      </body>
+      </head>
+      `,
+      subject: 'Group admin transfer',
     });
     return result;
   }

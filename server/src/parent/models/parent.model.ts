@@ -35,6 +35,9 @@ export class Parent {
   @prop({ required: false, select: false })
   passwordResetCodeExpire?: Date;
 
+  @prop({ required: true, select: true })
+  sendingEmails: boolean;
+
   @prop({ required: false, select: false })
   newEmail?: string;
 

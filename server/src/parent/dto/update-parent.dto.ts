@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsDefined,
   IsNotEmpty,
   IsNotEmptyObject,
@@ -26,6 +27,10 @@ export class UpdateParentDto {
   @IsNotEmpty()
   @IsOptional()
   phone: string;
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  sendingEmails: boolean;
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

@@ -29,6 +29,12 @@ export class UpdateGroupDto {
   @IsOptional()
   @GroupAgeValidate()
   ages: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  @GroupAgeValidate()
+  avatar: string;
   @ApiProperty({ type: WeekDto })
   @IsDefined()
   @IsNotEmptyObject()

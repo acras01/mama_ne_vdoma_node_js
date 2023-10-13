@@ -16,6 +16,7 @@ import { ParentService } from '../parent/parent.service';
 import { ChildService } from '../child/child.service';
 import { PrepareGeoQuery } from 'src/shared/helpers/prepare-geo-query-mongo';
 import { UpdateGroupGeoDto } from './dto/update-group-geo.dto';
+import { BackblazeService } from 'src/backblaze/backblaze.service';
 
 @Injectable()
 export class GroupService {
@@ -24,6 +25,8 @@ export class GroupService {
     private readonly groupModel: ReturnModelType<typeof Group>,
     @Inject(forwardRef(() => ParentService))
     private readonly paretnSerivce: ParentService,
+    @Inject(forwardRef(() => BackblazeService))
+    private readonly backblazeService: BackblazeService,
     private readonly childService: ChildService,
     @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
@@ -42,6 +45,7 @@ export class GroupService {
       members: [{ childId, parentId }],
       ...createGroupDto,
     };
+    if (child.week) newGroup.week = child.week;
     if (parent.location) newGroup.location = parent.location;
     const group = await this.groupModel.create(newGroup);
     await this.mailService.groupCreatedNotification(parent.email, group.id);
@@ -62,6 +66,8 @@ export class GroupService {
     );
     if (!isAdminInGroup) throw new NotFoundException();
     group.adminId = newAdminId;
+    const newAdmin = await this.paretnSerivce.findById(newAdminId);
+    await this.mailService.adminTransferNotification(newAdmin.email, group.id);
     await group.save();
   }
 
@@ -169,7 +175,7 @@ export class GroupService {
       const parent = await this.paretnSerivce.findById(memberPair.parentId);
       await this.mailService.kickedFromGroupNotification(
         parent.email,
-        group.name,
+        group.id,
       );
     }
   }
@@ -187,6 +193,20 @@ export class GroupService {
   ) {
     const group = await this.findById(groupId);
     if (group.adminId !== adminId) throw new ForbiddenException();
+    try {
+      if (updateGroupDto.avatar) {
+        await this.backblazeService.getFileInfo(updateGroupDto.avatar);
+      }
+    } catch (error) {
+      throw new BadRequestException('New File not found');
+    }
+    if (
+      updateGroupDto.avatar &&
+      group.avatar &&
+      updateGroupDto.avatar !== group.avatar
+    ) {
+      await this.backblazeService.deleteFile(group.avatar);
+    }
     await group.updateOne(updateGroupDto);
     return await this.findById(groupId);
   }

@@ -6,12 +6,14 @@ import { TypegooseModule } from '@m8a/nestjs-typegoose';
 import { Group } from './models/group.model';
 import { GroupService } from './group.service';
 import { GroupController } from './group.controller';
+import { BackblazeModule } from 'src/backblaze/backblaze.module';
 
 @Module({
   imports: [
     ChildModule,
     forwardRef(() => ParentModule),
     forwardRef(() => MailModule),
+    forwardRef(() => BackblazeModule),
     TypegooseModule.forFeature([Group]),
   ],
   controllers: [GroupController],

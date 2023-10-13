@@ -12,6 +12,8 @@ export class Group {
   adminId: string;
   @prop({ required: true })
   ages: string;
+  @prop({ required: false })
+  avatar?: string;
   @prop({ require: true, default: [] })
   members: askingJoinGroup[];
   @ValidateNested({ each: true })

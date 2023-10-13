@@ -88,6 +88,7 @@ export class ParentService {
       password: hash,
       email: createParentDto.email,
       isConfirmed: false,
+      sendingEmails: true,
     });
     await this.sendConfirmationEmail({ email: createParentDto.email });
     return true;
