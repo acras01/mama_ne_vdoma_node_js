@@ -33,7 +33,6 @@ export class UpdateGroupDto {
   @IsNotEmpty()
   @IsString()
   @IsOptional()
-  @GroupAgeValidate()
   avatar: string;
   @ApiProperty({ type: WeekDto })
   @IsDefined()
