@@ -39,6 +39,7 @@ export class GroupService {
   ) {
     const parent = await this.paretnSerivce.findById(parentId);
     const child = await this.childService.findChildById(childId);
+    if(child.parentId!== parent.id) throw new ForbiddenException('Not a parent of this child')
     const newGroup: Group = {
       adminId: parentId,
       ages: String(child.age),

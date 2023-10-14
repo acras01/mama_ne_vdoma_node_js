@@ -32,7 +32,7 @@ export class ChildService {
 
   async findChildById(id: string) {
     const findedDoc = await this.childModel.findById(id);
-    if (findedDoc === null) throw new NotFoundException('Not Found');
+    if (findedDoc === null) throw new NotFoundException('Child not found');
     return findedDoc;
   }
 
@@ -42,14 +42,14 @@ export class ChildService {
     parentId: string,
   ) {
     const child = await this.findChildById(id);
-    if (child.parentId !== parentId) throw new ForbiddenException();
+    if (child.parentId !== parentId) throw new ForbiddenException('Not a parent of this child');
     await child.updateOne(updateChildDto);
     return await this.findChildById(id);
   }
 
   async deleteChild(id: string, parentId: string) {
     const child = await this.findChildById(id);
-    if (child.parentId !== parentId) throw new ForbiddenException();
+    if (child.parentId !== parentId) throw new ForbiddenException('Not a parent of this child');
     await child.deleteOne();
     return true;
   }
