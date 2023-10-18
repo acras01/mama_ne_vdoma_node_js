@@ -95,7 +95,7 @@ export class MailService {
         parent.avatar
       }" alt="user_avatar" width="120" height="120" style="display: block; margin-left: auto; margin-right: auto;" /></td>
       <td style="width: 40%; height: 10px;">
-      <h2>${parent.name.toUpperCase()}</h2>
+      <h2>${parent.name ? parent.name.toUpperCase() : ''}</h2>
       <p>${parent.email}</p>
       </td>
       <td style="width: 35%; height: 10px;"></td>
