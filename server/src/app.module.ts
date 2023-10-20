@@ -15,6 +15,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-array.filter';
 import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filter';
 import { GroupModule } from './group/group.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { GroupModule } from './group/group.module';
       useFactory: getJwtConfig,
       global: true,
     }),
+    ScheduleModule.forRoot(),
     ParentModule,
     AuthModule,
     MailModule,

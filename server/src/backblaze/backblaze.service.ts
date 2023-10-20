@@ -5,6 +5,7 @@ import { IEnv } from 'src/configs/env.config';
 import { Model } from 'mongoose';
 import { FileModel } from './models/file.model';
 import { InjectModel } from '@m8a/nestjs-typegoose';
+import { Cron, CronExpression } from '@nestjs/schedule';
 @Injectable()
 export class BackblazeService {
   private readonly bucketId: string;
@@ -80,5 +81,11 @@ export class BackblazeService {
     (await this.bb2.deleteFileVersion({ fileId: id, fileName })).data;
     await this.fileModel.deleteOne({ Url: id });
     return true;
+  }
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  private async _refreshBb2Token() {
+    const res = await this.bb2.authorize();
+    console.log(res);
+    console.log('updated?')
   }
 }
