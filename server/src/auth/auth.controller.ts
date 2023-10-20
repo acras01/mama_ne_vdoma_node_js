@@ -5,6 +5,8 @@ import {
   Get,
   HttpCode,
   Post,
+  Req,
+  Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -12,6 +14,7 @@ import { RegisterDto } from './dto/register.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import {
   ApiBearerAuth,
+  ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
@@ -19,12 +22,15 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { UserData } from './decorators/get-user-from-jwt.decorator';
 import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
-import { AuthGuard } from './guards/auth.guards';
+import { AuthGuard } from './guards/auth.guard';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from 'src/mail/dto/reset-password.dto';
 import { ResendCodeDto } from './dto/resend-code.dto';
 import { RequestChangeEmail } from './dto/request-change-email.dto';
 import { CodeDto } from './dto/change-email.dto';
+import { CookieAuthenticationGuard } from './guards/coockie.guard';
+import RequestWithSession from './interfaces/req-with-session.interface';
+import { LogInWithCredentialsGuard } from './guards/login-with-credentials.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -37,10 +43,9 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   @ApiOkResponse()
-  async login(@Body() loginDto: LoginDto): Promise<{ jwt: string }> {
-    const jwt = await this.authService.login(loginDto);
-    return { jwt };
-  }
+  @UseGuards(LogInWithCredentialsGuard)
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async login(@Body() loginDto: LoginDto) {}
 
   @Post('register')
   @ApiCreatedResponse()
@@ -57,16 +62,16 @@ export class AuthController {
   @HttpCode(200)
   @ApiOkResponse()
   async confirmAccount(@Body() confirmEmailDto: ConfirmEmailDto) {
-    const jwt = await this.authService.confirmEmail(confirmEmailDto);
-    return { jwt };
+    await this.authService.confirmEmail(confirmEmailDto);
+    return;
   }
 
   @Get('me')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @ApiOkResponse()
-  async getMe(@UserData() jwtData: IJwtData) {
-    return await this.authService.getMe(jwtData.email);
+  async getMe(@Req() request: RequestWithSession) {
+    return await this.authService.getMe(request.user.email);
   }
 
   @Post('forget-password')
@@ -80,22 +85,29 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto);
   }
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Post('change-email-request')
   async changeEmailRequest(
     @Body() requestChangeEmail: RequestChangeEmail,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
     return await this.authService.sendChangeEmailCode(
-      jwtData.id,
+      request.user.id,
       requestChangeEmail,
     );
   }
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Post('change-email')
-  async changeEmail(@Body() codeDto: CodeDto, @UserData() jwtData: IJwtData) {
-    return await this.authService.changeEmail(jwtData.email, codeDto.code);
+  async changeEmail(@Body() codeDto: CodeDto, @Req() request: RequestWithSession) {
+    return await this.authService.changeEmail(request.user.email, codeDto.code);
+  }
+  @UseGuards(CookieAuthenticationGuard)
+  @Post('logout')
+  async logOut(@Req() request: RequestWithSession) {
+    console.log(request.user);
+    request.logOut(() => true);
+    request.session.cookie.maxAge = 0;
   }
 }

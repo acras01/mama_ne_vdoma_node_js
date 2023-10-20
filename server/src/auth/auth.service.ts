@@ -48,6 +48,15 @@ export class AuthService {
     return await this.parentService.createParent(registerDto);
   }
 
+  async getAuthenticatedUser(email: string, password: string) {
+    const parent = await this.parentService.findFullInfoByEmail(email);
+    const isPasswordCorrect = await bcrypt.compare(password, parent.password);
+    if (!isPasswordCorrect)
+      throw new UnauthorizedException('Wrong credentials');
+    console.log('parent', parent);
+    return parent;
+  }
+
   async confirmEmail(confirmEmailDto: ConfirmEmailDto) {
     await this.parentService.confirmAccountByCode(confirmEmailDto);
     const parent = await this.parentService.findFullInfoByEmail(
@@ -61,6 +70,7 @@ export class AuthService {
   }
 
   async getMe(email: string) {
+    // TODO add lastLoginDate to user and update in this route
     return await this.parentService.findByEmail(email);
   }
 
