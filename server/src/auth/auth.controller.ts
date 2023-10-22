@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -97,5 +98,14 @@ export class AuthController {
   @Post('change-email')
   async changeEmail(@Body() codeDto: CodeDto, @UserData() jwtData: IJwtData) {
     return await this.authService.changeEmail(jwtData.email, codeDto.code);
+  }
+
+  @Get('google/generateUrl')
+  async getUrl() {
+    return await this.authService.googleGetUrl();
+  }
+  @Post('google/:code')
+  async getGoogleInfo(@Param('code') code: string) {
+    return await this.authService.googleInfo(code);
   }
 }

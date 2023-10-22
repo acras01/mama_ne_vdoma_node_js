@@ -9,6 +9,8 @@ export interface IEnv {
   BB2_SECRET_KEY: string;
   BB2_SECRET_KEY_NAME: string;
   BB2_FILES_BUCKET_ID: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
 }
 
 const baseString = Joi.string().required().exist();
@@ -23,4 +25,6 @@ export const envValidationSchea = Joi.object<IEnv>({
   BB2_SECRET_KEY: baseString,
   BB2_SECRET_KEY_NAME: baseString,
   BB2_FILES_BUCKET_ID: baseString,
+  GOOGLE_CLIENT_ID: baseString,
+  GOOGLE_CLIENT_SECRET: baseString,
 });

@@ -11,12 +11,15 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
-
+import { google } from 'googleapis';
+import { IEnv } from 'src/configs/env.config';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly parentService: ParentService,
+    private readonly configService: ConfigService<IEnv>,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -88,5 +91,35 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     await this.parentService.resetPassword(resetPasswordDto);
     return true;
+  }
+
+  async googleInfo(code: string) {
+    const Oauth2Client = new google.auth.OAuth2(
+      this.configService.get('GOOGLE_CLIENT_ID'),
+      this.configService.get('GOOGLE_CLIENT_SECRET'),
+    );
+
+    const codes = await Oauth2Client.getToken(code);
+    console.log(codes);
+    Oauth2Client.setCredentials({ access_token: codes.tokens.access_token });
+    const ouath2 = google.oauth2({ auth: Oauth2Client, version: 'v2' });
+    const { data } = await ouath2.userinfo.get();
+    console.log(data);
+    return data
+  }
+  async googleGetUrl() {
+    const Oauth2Client = new google.auth.OAuth2(
+      this.configService.get('GOOGLE_CLIENT_ID'),
+      this.configService.get('GOOGLE_CLIENT_SECRET'),
+    );
+    const url = Oauth2Client.generateAuthUrl({
+      access_type: 'online',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+      ],
+    });
+    console.log(url);
+    return url
   }
 }
