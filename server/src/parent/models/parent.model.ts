@@ -35,7 +35,7 @@ export class Parent {
   @prop({ required: false, select: false })
   passwordResetCodeExpire?: Date;
 
-  @prop({ required: true, select: true })
+  @prop({ required: true, default: true, select: true })
   sendingEmails: boolean;
 
   @prop({ required: false, select: false })
@@ -49,6 +49,9 @@ export class Parent {
 
   @prop({ required: false })
   isConfirmed: boolean;
+
+  @prop({ default: [] })
+  groupJoinRequests: string[];
 
   // TODO fix
   @prop({ required: false })
