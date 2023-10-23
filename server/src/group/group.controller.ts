@@ -130,4 +130,11 @@ export class GroupController {
   ) {
     await this.groupService.updateGroup(groupId, jwtData.id, updateGroupDto);
   }
+  @Post('leave/:groupId/')
+  async leaveFromGroup(
+    @Param('groupId') groupId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.leaveFromGroup(groupId, jwtData.id);
+  }
 }

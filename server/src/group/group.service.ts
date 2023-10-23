@@ -39,7 +39,8 @@ export class GroupService {
   ) {
     const parent = await this.paretnSerivce.findById(parentId);
     const child = await this.childService.findChildById(childId);
-    if(child.parentId!== parent.id) throw new ForbiddenException('Not a parent of this child')
+    if (child.parentId !== parent.id)
+      throw new ForbiddenException('Not a parent of this child');
     const newGroup: Group = {
       adminId: parentId,
       ages: String(child.age),
@@ -95,11 +96,14 @@ export class GroupService {
       throw new BadRequestException('Already sended request');
     const groupAdmin = await this.paretnSerivce.findById(group.adminId);
     group.askingJoin.push({ childId, parentId });
+    console.log(parent);
+    parent.groupJoinRequests.push(groupId);
     this.mailService.sendGroupJoiningRequest(
       groupAdmin.email,
       parentId,
       childId,
     );
+    await parent.save();
     await group.save();
   }
 
@@ -125,6 +129,7 @@ export class GroupService {
       await this.mailService.sendGroupInvitationReject(parent.email, group.id);
     }
     group.askingJoin = group.askingJoin.filter((el) => el !== ask);
+    await this.removeGroupRequestFromUser(parent.id, group.id);
     await group.save();
   }
   async fullInfo(groupId: string, adminId: string) {
@@ -181,10 +186,35 @@ export class GroupService {
     }
   }
 
+  private async removeGroupRequestFromUser(parentId, groupId) {
+    const parent = await this.paretnSerivce.findById(parentId);
+    parent.groupJoinRequests = parent.groupJoinRequests.filter(
+      (el) => el !== groupId,
+    );
+    await parent.save();
+  }
+
   async deleteGroup(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
     if (group.adminId !== adminId) throw new ForbiddenException();
+    await Promise.all(
+      group.askingJoin.map((el) =>
+        this.removeGroupRequestFromUser(el.parentId, group.id),
+      ),
+    );
     await group.deleteOne();
+  }
+
+  async leaveFromGroup(groupId: string, parentId: string) {
+    const group = await this.findById(groupId);
+    if (!group.members.find((el) => el.parentId === parentId))
+      throw new BadRequestException('Not in group');
+    if (group.adminId === parentId)
+      throw new BadRequestException(
+        'Cannot leave from group where you an admin',
+      );
+    group.members = group.members.filter((el) => el.parentId !== parentId);
+    await group.save();
   }
 
   async updateGroup(
