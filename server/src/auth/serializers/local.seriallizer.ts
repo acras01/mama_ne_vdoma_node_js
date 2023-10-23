@@ -1,12 +1,11 @@
 import { PassportSerializer } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { ParentService } from 'src/parent/parent.service';
 import { Parent } from 'src/parent/models/parent.model';
 import { DocumentType } from '@typegoose/typegoose/lib/types';
 
 @Injectable()
 export class LocalSerializer extends PassportSerializer {
-  constructor(private readonly parentService: ParentService) {
+  constructor() {
     super();
   }
 

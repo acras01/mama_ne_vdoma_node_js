@@ -99,4 +99,9 @@ export class AuthService {
     await this.parentService.resetPassword(resetPasswordDto);
     return true;
   }
+
+  async handleGoogleCode(code: string) {
+    //todo google service etc...
+    return await this.parentService.findFullInfoByEmail('simkav2411@gmail.com');//stub
+  }
 }

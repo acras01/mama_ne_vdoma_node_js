@@ -26,6 +26,9 @@ export class Parent {
   @prop({ _id: false, required: false, type: () => [Location] })
   location?: Location;
 
+  @prop({ default: false })
+  isGoogle: boolean;
+
   @prop({ required: false, select: false })
   activationCode?: string;
 

@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   Req,
   Session,
@@ -31,6 +32,7 @@ import { CodeDto } from './dto/change-email.dto';
 import { CookieAuthenticationGuard } from './guards/coockie.guard';
 import RequestWithSession from './interfaces/req-with-session.interface';
 import { LogInWithCredentialsGuard } from './guards/login-with-credentials.guard';
+import { GoogleCodeAuthGuard } from './guards/google-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -46,6 +48,13 @@ export class AuthController {
   @UseGuards(LogInWithCredentialsGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async login(@Body() loginDto: LoginDto) {}
+
+  @Post('google/:code')
+  @HttpCode(200)
+  @ApiOkResponse()
+  @UseGuards(GoogleCodeAuthGuard)
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async googleAuth(@Param('code') code: string) {}
 
   @Post('register')
   @ApiCreatedResponse()
@@ -100,7 +109,10 @@ export class AuthController {
   @ApiCookieAuth()
   @UseGuards(CookieAuthenticationGuard)
   @Post('change-email')
-  async changeEmail(@Body() codeDto: CodeDto, @Req() request: RequestWithSession) {
+  async changeEmail(
+    @Body() codeDto: CodeDto,
+    @Req() request: RequestWithSession,
+  ) {
     return await this.authService.changeEmail(request.user.email, codeDto.code);
   }
   @UseGuards(CookieAuthenticationGuard)
