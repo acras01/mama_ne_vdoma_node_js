@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -136,5 +138,13 @@ export class GroupController {
     @UserData() jwtData: IJwtData,
   ) {
     await this.groupService.leaveFromGroup(groupId, jwtData.id);
+  }
+  @HttpCode(200)
+  @Delete(':groupId')
+  async deleteGroup(
+    @Param('groupId') groupId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.deleteGroup(groupId, jwtData.id);
   }
 }
