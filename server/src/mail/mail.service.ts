@@ -23,8 +23,10 @@ export class MailService {
     this.from = this.configService.get('SMTP_USER');
   }
 
+  //TODO add queue and send mails throug queue
+
   async sendConfirmationEmail(sendConfirmationEmail: SendConfirmationEmail) {
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: sendConfirmationEmail.email,
       from: this.from,
       text: sendConfirmationEmail.code,
@@ -44,11 +46,10 @@ export class MailService {
 `,
       subject: 'Confirmation Email',
     });
-    return result;
   }
 
   async sendPasswordResetCode(sendConfirmationEmail: SendConfirmationEmail) {
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: sendConfirmationEmail.email,
       from: this.from,
       html: `
@@ -66,8 +67,6 @@ export class MailService {
       `,
       subject: 'Password reset code',
     });
-
-    return result;
   }
 
   async sendGroupJoiningRequest(
@@ -79,7 +78,7 @@ export class MailService {
     if (!parent.sendingEmails) return;
     const childs = await this.childService.getChilds(parentId);
     const child = await this.childService.findChildById(childId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
@@ -126,7 +125,7 @@ export class MailService {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
@@ -162,23 +161,21 @@ export class MailService {
       `,
       subject: 'Kicked from group notification',
     });
-    return result;
   }
 
   async sendChangeEmailCode(email: string, code: string) {
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       text: `${code}`,
       subject: 'Change email request',
     });
-    return result;
   }
 
   async sendEmailChanged(email: string, oldEmail: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: oldEmail,
       from: this.from,
       html: `
@@ -197,14 +194,13 @@ export class MailService {
       `,
       subject: 'Email changed',
     });
-    return result;
   }
 
   async sendGroupInvitationReject(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
@@ -235,14 +231,13 @@ export class MailService {
       `,
       subject: 'Rejecting group request',
     });
-    return result;
   }
 
   async sendGroupInvitationAccept(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
@@ -273,14 +268,13 @@ export class MailService {
             `,
       subject: 'Accepting group request',
     });
-    return result;
   }
 
   async groupCreatedNotification(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+     this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
@@ -318,14 +312,13 @@ export class MailService {
 `,
       subject: 'Accepting group request',
     });
-    return result;
   }
 
   async adminTransferNotification(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
@@ -362,6 +355,5 @@ export class MailService {
       `,
       subject: 'Group admin transfer',
     });
-    return result;
   }
 }
