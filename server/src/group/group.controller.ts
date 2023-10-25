@@ -75,7 +75,7 @@ export class GroupController {
   async findGroupWithMemberId(@Param('parentId') parentId: string) {
     return await this.groupService.findGroupsByMember(parentId);
   }
-  @Post('full-info/:groupId')
+  @Get('full-info/:groupId')
   async findFullInfoAboutGroup(
     @Param('groupId') groupId: string,
     @UserData() jwtData: IJwtData,
