@@ -38,7 +38,7 @@ export class MailService {
       <h2 style="text-align: center;">Вітаємо вас у застосунку<a href="https://mommy-not-home.online/">"Мама не вдома"!</a></h2>
       <p style="text-align: center;">На ваш запит надсилаємо вам одноразовий пароль для підтвердження вашого емейлу:</p>
       <h3 style="text-align: center;">${sendConfirmationEmail.code}</h3>
-      <p style="text-align: center;"><span>Будьласка, введіть цей пароль у вікно запиту в мобільному застосунку для завершення реєстрації.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
+      <p style="text-align: center;"><span>Будь ласка, введіть цей пароль у вікно запиту в мобільному застосунку для завершення реєстрації.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
       <p style="text-align: center;"><span>Якщо це не ви реєструвались в мобільному застосунку "Мама не вдома" - не хвилюйтеся, та просто не реагуйте на це повідомлення. Ми видалимо ваш емейл з нашої бази даних назавжди.</span></p>
       </body>
       </head>
@@ -86,7 +86,7 @@ export class MailService {
       <body>
       <div style="background-color: #FFF; max-width: 800px; margin: auto; padding: 20px;">
       <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Вам надійшов запит на приєднання нового учасника (нової учасниці) групи по долгяду за дітьми в застосунку <a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <h2 style="text-align: center;">Вам надійшов запит на приєднання нового учасника (нової учасниці) групи по догляду за дітьми в застосунку <a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 56px;">
       <tbody>
       <tr style="height: 10px;">
