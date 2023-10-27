@@ -107,6 +107,31 @@ export class GroupService {
     await group.save();
   }
 
+  async cancelGroupMembershipRequest(
+    parentId: string,
+    childId: string,
+    groupId: string,
+  ) {
+    const child = await this.childService.findChildById(childId);
+    const parent = await this.paretnSerivce.findById(parentId);
+    if (child.parentId !== parent.id) throw new BadRequestException();
+    const group = await this.findById(groupId);
+
+    const requestIndexGroup = group.askingJoin.findIndex(
+      (el) => el.childId === childId,
+    );
+
+    if (requestIndexGroup !== -1) {
+      throw new BadRequestException('Already sended request');
+    }
+
+    group.askingJoin = group.askingJoin.filter((el) => el.childId !== childId);
+    parent.groupJoinRequests = group.askingJoin.map((el) => el.childId);
+
+    await parent.save();
+    await group.save();
+  }
+
   async resolveJoinGroup(
     groupId: string,
     adminId: string,
