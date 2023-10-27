@@ -121,12 +121,14 @@ export class GroupService {
       (el) => el.childId === childId,
     );
 
-    if (requestIndexGroup !== -1) {
-      throw new BadRequestException('Already sended request');
+    if (requestIndexGroup === -1) {
+      throw new BadRequestException('Request not found');
     }
 
     group.askingJoin = group.askingJoin.filter((el) => el.childId !== childId);
-    parent.groupJoinRequests = group.askingJoin.map((el) => el.childId);
+    parent.groupJoinRequests = parent.groupJoinRequests.filter(
+      (el) => el !== childId,
+    );
 
     await parent.save();
     await group.save();
