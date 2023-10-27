@@ -120,7 +120,7 @@ export class GroupService {
       throw new BadRequestException('Request not found');
     }
 
-    group.askingJoin = group.askingJoin.filter((el) => el.childId !== groupId);
+    group.askingJoin = group.askingJoin.filter((el) => el.childId !== childId);
     parent.groupJoinRequests = parent.groupJoinRequests.filter(
       (el) => el !== groupId,
     );
