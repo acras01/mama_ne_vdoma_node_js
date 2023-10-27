@@ -116,18 +116,13 @@ export class GroupService {
     const parent = await this.paretnSerivce.findById(parentId);
     if (child.parentId !== parent.id) throw new BadRequestException();
     const group = await this.findById(groupId);
-
-    const requestIndexGroup = group.askingJoin.findIndex(
-      (el) => el.childId === childId,
-    );
-
-    if (requestIndexGroup === -1) {
+    if (!group.askingJoin.find((el) => el.childId === childId)) {
       throw new BadRequestException('Request not found');
     }
 
-    group.askingJoin = group.askingJoin.filter((el) => el.childId !== childId);
+    group.askingJoin = group.askingJoin.filter((el) => el.childId !== groupId);
     parent.groupJoinRequests = parent.groupJoinRequests.filter(
-      (el) => el !== childId,
+      (el) => el !== groupId,
     );
 
     await parent.save();
