@@ -1,4 +1,3 @@
-import { CancelGroupDto } from './dto/cancel-group.dto';
 import {
   BadRequestException,
   ForbiddenException,
@@ -18,7 +17,7 @@ import { ChildService } from '../child/child.service';
 import { PrepareGeoQuery } from 'src/shared/helpers/prepare-geo-query-mongo';
 import { UpdateGroupGeoDto } from './dto/update-group-geo.dto';
 import { BackblazeService } from 'src/backblaze/backblaze.service';
-import { isChild, isNotChild } from './helpers';
+import { isChild, isNotChild } from './utils/helpers';
 
 @Injectable()
 export class GroupService {
@@ -115,7 +114,8 @@ export class GroupService {
 
   async cancelGroupMembershipRequest(
     groupId: string,
-    { parentId, childId }: CancelGroupDto,
+    parentId: string,
+    childId: string,
   ) {
     const [child, parent, group] = await Promise.all([
       this.childService.findChildById(childId),
