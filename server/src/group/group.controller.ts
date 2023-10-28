@@ -132,7 +132,7 @@ export class GroupController {
   ) {
     await this.groupService.updateGroup(groupId, jwtData.id, updateGroupDto);
   }
-  @Post('leave/:groupId/')
+  @Post('leave/:groupId')
   async leaveFromGroup(
     @Param('groupId') groupId: string,
     @UserData() jwtData: IJwtData,
@@ -146,5 +146,18 @@ export class GroupController {
     @UserData() jwtData: IJwtData,
   ) {
     await this.groupService.deleteGroup(groupId, jwtData.id);
+  }
+  @HttpCode(200)
+  @Post('cancel-membership/:groupId/:childId')
+  async cancelGroupMembership(
+    @Param('groupId') groupId: string,
+    @Param('childId') childId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.cancelGroupMembershipRequest(
+      groupId,
+      jwtData.id,
+      childId,
+    );
   }
 }

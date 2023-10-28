@@ -17,6 +17,8 @@ import { ChildService } from '../child/child.service';
 import { PrepareGeoQuery } from 'src/shared/helpers/prepare-geo-query-mongo';
 import { UpdateGroupGeoDto } from './dto/update-group-geo.dto';
 import { BackblazeService } from 'src/backblaze/backblaze.service';
+import { isNotChild } from './utils/isNotChild';
+import { isChild } from './utils/isChild';
 
 @Injectable()
 export class GroupService {
@@ -24,7 +26,7 @@ export class GroupService {
     @InjectModel(Group)
     private readonly groupModel: ReturnModelType<typeof Group>,
     @Inject(forwardRef(() => ParentService))
-    private readonly paretnSerivce: ParentService,
+    private readonly parentService: ParentService,
     @Inject(forwardRef(() => BackblazeService))
     private readonly backblazeService: BackblazeService,
     private readonly childService: ChildService,
@@ -37,8 +39,10 @@ export class GroupService {
     childId: string,
     createGroupDto: CreateGroupDto,
   ) {
-    const parent = await this.paretnSerivce.findById(parentId);
-    const child = await this.childService.findChildById(childId);
+    const [child, parent] = await Promise.all([
+      this.childService.findChildById(childId),
+      this.parentService.findById(parentId),
+    ]);
     if (child.parentId !== parent.id)
       throw new ForbiddenException('Not a parent of this child');
     const newGroup: Group = {
@@ -68,7 +72,7 @@ export class GroupService {
     );
     if (!isAdminInGroup) throw new NotFoundException();
     group.adminId = newAdminId;
-    const newAdmin = await this.paretnSerivce.findById(newAdminId);
+    const newAdmin = await this.parentService.findById(newAdminId);
     await this.mailService.adminTransferNotification(newAdmin.email, group.id);
     await group.save();
   }
@@ -86,15 +90,17 @@ export class GroupService {
   }
 
   async askToJoinGroup(parentId: string, childId: string, groupId: string) {
-    const child = await this.childService.findChildById(childId);
-    const parent = await this.paretnSerivce.findById(parentId);
+    const [child, parent] = await Promise.all([
+      this.childService.findChildById(childId),
+      this.parentService.findById(parentId),
+    ]);
     if (child.parentId !== parent.id) throw new BadRequestException();
     const group = await this.findById(groupId);
-    if (group.members.find((el) => el.childId === childId))
+    if (group.members.find(isChild(childId)))
       throw new BadRequestException('Already in group');
     if (group.askingJoin.find((el) => el.childId === childId))
       throw new BadRequestException('Already sended request');
-    const groupAdmin = await this.paretnSerivce.findById(group.adminId);
+    const groupAdmin = await this.parentService.findById(group.adminId);
     group.askingJoin.push({ childId, parentId });
     console.log(parent);
     parent.groupJoinRequests.push(groupId);
@@ -107,17 +113,43 @@ export class GroupService {
     await group.save();
   }
 
+  async cancelGroupMembershipRequest(
+    groupId: string,
+    parentId: string,
+    childId: string,
+  ) {
+    const [child, parent, group] = await Promise.all([
+      this.childService.findChildById(childId),
+      this.parentService.findById(parentId),
+      this.findById(groupId),
+    ]);
+
+    if (child.parentId !== parent.id) throw new BadRequestException();
+    if (!group.askingJoin.find((el) => el.childId === childId)) {
+      throw new BadRequestException('Request not found');
+    }
+
+    group.askingJoin = group.askingJoin.filter(isNotChild(childId));
+    parent.groupJoinRequests = parent.groupJoinRequests.filter(
+      (el) => el !== groupId,
+    );
+
+    await Promise.all([parent.save(), group.save()]);
+  }
+
   async resolveJoinGroup(
     groupId: string,
     adminId: string,
     childId: string,
     isAccept: boolean,
   ) {
-    const group = await this.findById(groupId);
+    const [group, child] = await Promise.all([
+      this.findById(groupId),
+      this.childService.findChildById(childId),
+    ]);
     if (group.adminId !== adminId) throw new ForbiddenException('Not an admin');
-    const child = await this.childService.findChildById(childId);
     const parentId = child.parentId;
-    const parent = await this.paretnSerivce.findById(parentId);
+    const parent = await this.parentService.findById(parentId);
     const ask = group.askingJoin.find(
       (ask) => ask.parentId === parentId && ask.childId === childId,
     );
@@ -138,9 +170,9 @@ export class GroupService {
       throw new ForbiddenException('Dont have access');
     const parents = await Promise.all([
       ...group.members.map((member) =>
-        this.paretnSerivce.findById(member.parentId),
+        this.parentService.findById(member.parentId),
       ),
-      ...group.askingJoin.map((el) => this.paretnSerivce.findById(el.parentId)),
+      ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
     ]);
     const preparedParents = parents.map((el) => {
       const {
@@ -175,10 +207,10 @@ export class GroupService {
     const memberPair = group.members.find((el) => el.childId === childId);
     if (!memberPair) throw new NotFoundException('Member not found');
     group.members = group.members.filter((el) => el !== memberPair);
-    group.askingJoin = group.askingJoin.filter((el) => el.childId !== childId);
+    group.askingJoin = group.askingJoin.filter(isNotChild(childId));
     await group.save();
     if (notification) {
-      const parent = await this.paretnSerivce.findById(memberPair.parentId);
+      const parent = await this.parentService.findById(memberPair.parentId);
       await this.mailService.kickedFromGroupNotification(
         parent.email,
         group.id,
@@ -187,7 +219,7 @@ export class GroupService {
   }
 
   private async removeGroupRequestFromUser(parentId, groupId) {
-    const parent = await this.paretnSerivce.findById(parentId);
+    const parent = await this.parentService.findById(parentId);
     parent.groupJoinRequests = parent.groupJoinRequests.filter(
       (el) => el !== groupId,
     );
@@ -258,7 +290,7 @@ export class GroupService {
   }
 
   async cleanUpAfterDeleteParent(parentId: string) {
-    const parent = await this.paretnSerivce.findById(parentId);
+    const parent = await this.parentService.findById(parentId);
     const aloneGroups = await this.findGroupsByMember(parent.id);
     await Promise.all(
       aloneGroups
