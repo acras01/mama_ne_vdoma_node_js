@@ -18,6 +18,7 @@ import { UserData } from '../auth/decorators/get-user-from-jwt.decorator';
 import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
+import { CancelGroupDto } from './dto/cancel-group.dto';
 
 @ApiTags('group')
 @ApiBearerAuth()
@@ -132,7 +133,7 @@ export class GroupController {
   ) {
     await this.groupService.updateGroup(groupId, jwtData.id, updateGroupDto);
   }
-  @Post('leave/:groupId/')
+  @Post('leave/:groupId')
   async leaveFromGroup(
     @Param('groupId') groupId: string,
     @UserData() jwtData: IJwtData,
@@ -146,5 +147,16 @@ export class GroupController {
     @UserData() jwtData: IJwtData,
   ) {
     await this.groupService.deleteGroup(groupId, jwtData.id);
+  }
+  @HttpCode(200)
+  @Post('cancel-membership/:groupId')
+  async cancelGroupMembership(
+    @Param('groupId') groupId: string,
+    @Body() cancelGroupDto: CancelGroupDto,
+  ) {
+    await this.groupService.cancelGroupMembershipRequest(
+      groupId,
+      cancelGroupDto,
+    );
   }
 }
