@@ -17,7 +17,8 @@ import { ChildService } from '../child/child.service';
 import { PrepareGeoQuery } from 'src/shared/helpers/prepare-geo-query-mongo';
 import { UpdateGroupGeoDto } from './dto/update-group-geo.dto';
 import { BackblazeService } from 'src/backblaze/backblaze.service';
-import { isChild, isNotChild } from './utils/helpers';
+import { isNotChild } from './utils/isNotChild';
+import { isChild } from './utils/isChild';
 
 @Injectable()
 export class GroupService {
