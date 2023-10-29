@@ -102,8 +102,7 @@ export class GroupService {
       throw new BadRequestException('Already sended request');
     const groupAdmin = await this.parentService.findById(group.adminId);
     group.askingJoin.push({ childId, parentId });
-    console.log(parent);
-    parent.groupJoinRequests.push(groupId);
+    parent.groupJoinRequests.push({ groupId, childId });
     this.mailService.sendGroupJoiningRequest(
       groupAdmin.email,
       parentId,
@@ -130,8 +129,16 @@ export class GroupService {
     }
 
     group.askingJoin = group.askingJoin.filter(isNotChild(childId));
+
+    const parentRequest = parent.groupJoinRequests.find(
+      (el) => el.childId === childId && el.groupId === groupId,
+    );
+
+    if (!parentRequest)
+      throw new BadRequestException('Parent request not found');
+
     parent.groupJoinRequests = parent.groupJoinRequests.filter(
-      (el) => el !== groupId,
+      (el) => el !== parentRequest,
     );
 
     await Promise.all([parent.save(), group.save()]);

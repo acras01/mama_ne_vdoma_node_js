@@ -51,9 +51,17 @@ export class Parent {
   isConfirmed: boolean;
 
   @prop({ default: [] })
-  groupJoinRequests: string[];
+  groupJoinRequests: IGroupJoinRequest[];
 
   // TODO fix
   @prop({ required: false })
   week: unknown;
+}
+
+export class IGroupJoinRequest {
+  @prop({ required: true })
+  groupId: string;
+
+  @prop({ required: true })
+  childId: string;
 }
