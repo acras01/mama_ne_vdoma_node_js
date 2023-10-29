@@ -167,9 +167,18 @@ export class GroupService {
     } else {
       await this.mailService.sendGroupInvitationReject(parent.email, group.id);
     }
+    const parentRequest = parent.groupJoinRequests.find(
+      (el) => el.childId === childId && el.groupId === groupId,
+    );
+    parent.groupJoinRequests = parent.groupJoinRequests.filter(
+      (el) => el !== parentRequest,
+    );
     group.askingJoin = group.askingJoin.filter((el) => el !== ask);
-    await this.removeGroupRequestFromUser(parent.id, group.id);
-    await group.save();
+    await Promise.all([
+      this.removeGroupRequestFromUser(parent.id, group.id),
+      group.save(),
+      parent.save(),
+    ]);
   }
   async fullInfo(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
