@@ -8,6 +8,7 @@ import { Child } from './models/child.model';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { CreateChildDto } from './dto/create-child.dto';
 import { UpdateChildDto } from './dto/update-child.dto';
+import { childNotFound, notaParentOfThisChild } from './utils/errors';
 
 @Injectable()
 export class ChildService {
@@ -32,7 +33,7 @@ export class ChildService {
 
   async findChildById(id: string) {
     const findedDoc = await this.childModel.findById(id);
-    if (findedDoc === null) throw new NotFoundException('Child not found');
+    if (findedDoc === null) throw new NotFoundException(childNotFound);
     return findedDoc;
   }
 
@@ -42,14 +43,16 @@ export class ChildService {
     parentId: string,
   ) {
     const child = await this.findChildById(id);
-    if (child.parentId !== parentId) throw new ForbiddenException('Not a parent of this child');
+    if (child.parentId !== parentId)
+      throw new ForbiddenException(notaParentOfThisChild);
     await child.updateOne(updateChildDto);
     return await this.findChildById(id);
   }
 
   async deleteChild(id: string, parentId: string) {
     const child = await this.findChildById(id);
-    if (child.parentId !== parentId) throw new ForbiddenException('Not a parent of this child');
+    if (child.parentId !== parentId)
+      throw new ForbiddenException(notaParentOfThisChild);
     await child.deleteOne();
     return true;
   }

@@ -18,6 +18,14 @@ import { ResendCodeDto } from '../auth/dto/resend-code.dto';
 import { ChildService } from '../child/child.service';
 import { GroupService } from '../group/group.service';
 import { BackblazeService } from '../backblaze/backblaze.service';
+import {
+  accountNotFound,
+  emailNotFound,
+  expiredCode,
+  newFileNotFound,
+  notFound,
+  wrongCode,
+} from './utils/errors';
 
 export class ParentService {
   constructor(
@@ -34,13 +42,13 @@ export class ParentService {
 
   async findByEmail(email: string) {
     const findedDoc = await this.parentModel.findOne({ email });
-    if (findedDoc === null) throw new NotFoundException('Email not found');
+    if (findedDoc === null) throw new NotFoundException(emailNotFound);
     return findedDoc;
   }
 
   async findByNickName(nick: string) {
     const findedDoc = await this.parentModel.findOne({ name: nick });
-    if (findedDoc === null) throw new NotFoundException('Account not found');
+    if (findedDoc === null) throw new NotFoundException(accountNotFound);
     return findedDoc;
   }
 
@@ -51,7 +59,7 @@ export class ParentService {
 
   async findById(id: string) {
     const findedDoc = await this.parentModel.findById(id);
-    if (findedDoc === null) throw new NotFoundException('Not Found');
+    if (findedDoc === null) throw new NotFoundException(notFound);
     return findedDoc;
   }
 
@@ -67,7 +75,7 @@ export class ParentService {
         'changeEmailCode',
         'changeEmailCodeExpire',
       ]);
-    if (findedDoc === null) throw new NotFoundException('Email not found');
+    if (findedDoc === null) throw new NotFoundException(emailNotFound);
     return findedDoc;
   }
 
@@ -152,10 +160,10 @@ export class ParentService {
   async changeEmail(email: string, code: string) {
     const parent = await this.findFullInfoByEmail(email);
     if (Date.now() > parent.changeEmailCodeExpire.getTime()) {
-      throw new BadRequestException('Expired code');
+      throw new BadRequestException(expiredCode);
     }
     if (parent.changeEmailCode !== code)
-      throw new BadRequestException('Wrong code');
+      throw new BadRequestException(wrongCode);
     const oldEmail = parent.email;
     const newEmail = parent.newEmail;
     parent.email = parent.newEmail;
@@ -168,10 +176,10 @@ export class ParentService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const parent = await this.findFullInfoByEmail(resetPasswordDto.email);
     if (Date.now() > parent.passwordResetCodeExpire.getTime()) {
-      throw new BadRequestException('Expired code');
+      throw new BadRequestException(expiredCode);
     }
     if (parent.passwordResetCode !== resetPasswordDto.code)
-      throw new BadRequestException('Wrong code');
+      throw new BadRequestException(wrongCode);
     const hash = await bcrypt.hash(resetPasswordDto.password, 10);
     parent.password = hash;
     parent.passwordResetCode = '';
@@ -184,7 +192,7 @@ export class ParentService {
         await this.backblazeService.getFileInfo(patchParentDto.avatar);
       }
     } catch (error) {
-      throw new BadRequestException('New File not found');
+      throw new BadRequestException(newFileNotFound);
     }
     const parent = await this.findByEmail(email);
     if (
