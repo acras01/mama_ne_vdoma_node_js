@@ -22,7 +22,6 @@ import { isChild } from './utils/isChild';
 import {
   alreadyInGroup,
   alreadySendedRequest,
-  cannotLeaveFromGroupWhereYouAnAdmin,
   dontHaveAccess,
   memberNotFound,
   newFileNotFound,
@@ -33,6 +32,7 @@ import {
   requestNotFound,
   requestToJoinNotFound,
 } from './utils/errors';
+
 
 @Injectable()
 export class GroupService {
@@ -116,8 +116,7 @@ export class GroupService {
       throw new BadRequestException(alreadySendedRequest);
     const groupAdmin = await this.parentService.findById(group.adminId);
     group.askingJoin.push({ childId, parentId });
-    console.log(parent);
-    parent.groupJoinRequests.push(groupId);
+    parent.groupJoinRequests.push({ groupId, childId });
     this.mailService.sendGroupJoiningRequest(
       groupAdmin.email,
       parentId,
@@ -140,13 +139,16 @@ export class GroupService {
 
     if (child.parentId !== parent.id) throw new BadRequestException();
     if (!group.askingJoin.find((el) => el.childId === childId)) {
-      throw new BadRequestException(requestNotFound);
+       throw new BadRequestException(requestNotFound);
     }
-
-    group.askingJoin = group.askingJoin.filter(isNotChild(childId));
+     group.askingJoin = group.askingJoin.filter(isNotChild(childId));
     parent.groupJoinRequests = parent.groupJoinRequests.filter(
-      (el) => el !== groupId,
-    );
+      (el) => el !== groupId)
+        if (!parentRequest)
+      throw new BadRequestException('Parent request not found');
+
+    parent.groupJoinRequests = parent.groupJoinRequests.filter(
+      (el) => el !== parentRequest);
 
     await Promise.all([parent.save(), group.save()]);
   }
@@ -161,7 +163,9 @@ export class GroupService {
       this.findById(groupId),
       this.childService.findChildById(childId),
     ]);
+
     if (group.adminId !== adminId) throw new ForbiddenException(notAnAdmin);
+
     const parentId = child.parentId;
     const parent = await this.parentService.findById(parentId);
     const ask = group.askingJoin.find(
@@ -174,9 +178,18 @@ export class GroupService {
     } else {
       await this.mailService.sendGroupInvitationReject(parent.email, group.id);
     }
+    const parentRequest = parent.groupJoinRequests.find(
+      (el) => el.childId === childId && el.groupId === groupId,
+    );
+    parent.groupJoinRequests = parent.groupJoinRequests.filter(
+      (el) => el !== parentRequest,
+    );
     group.askingJoin = group.askingJoin.filter((el) => el !== ask);
-    await this.removeGroupRequestFromUser(parent.id, group.id);
-    await group.save();
+    await Promise.all([
+      this.removeGroupRequestFromUser(parent.id, group.id),
+      group.save(),
+      parent.save(),
+    ]);
   }
   async fullInfo(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
@@ -249,7 +262,7 @@ export class GroupService {
     await group.deleteOne();
   }
 
-  async leaveFromGroup(groupId: string, parentId: string) {
+async leaveFromGroup(groupId: string, parentId: string) {
     const group = await this.findById(groupId);
     if (!group.members.find((el) => el.parentId === parentId))
       throw new BadRequestException(notInGroup);

@@ -130,8 +130,7 @@ export class ParentService {
 
   async sendPasswordCode(email: string) {
     const parent = await this.parentModel.findOne({ email });
-    if (!parent) return;
-    if (!parent.isConfirmed) return;
+    if (!parent) throw new NotFoundException('User nor found');
     const code = String(this.generateFourDigitCode());
     const date = new Date();
     date.setMinutes(date.getMinutes() + 30);
@@ -144,8 +143,9 @@ export class ParentService {
 
   async sendChangeEmailCode(parentId: string, email: string) {
     const parent = await this.findById(parentId);
-    if (!parent) return;
-    if (!parent.isConfirmed) return;
+    if (!parent) throw new NotFoundException('User nor found');
+    if (!parent.isConfirmed)
+      throw new BadRequestException('Account not confirmed');
     const code = String(this.generateFourDigitCode());
     const date = new Date();
     date.setMinutes(date.getMinutes() + 30);
