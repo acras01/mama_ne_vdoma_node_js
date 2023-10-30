@@ -1,5 +1,5 @@
 export const notaParentOfThisChild = 'Не є родичем цієї дитини';
-export const notFound = 'Не знайдено';
+export const notFound = 'Группу не знайдено';
 export const alreadyInGroup = 'Вже у группі';
 export const alreadySendedRequest = 'Запит вже надіслано';
 export const requestNotFound = 'Запит не знайдено';
