@@ -22,6 +22,7 @@ import { isChild } from './utils/isChild';
 import {
   alreadyInGroup,
   alreadySendedRequest,
+  cannotLeaveFromGroupWhereYouAnAdmin,
   dontHaveAccess,
   memberNotFound,
   newFileNotFound,
@@ -253,9 +254,7 @@ export class GroupService {
     if (!group.members.find((el) => el.parentId === parentId))
       throw new BadRequestException(notInGroup);
     if (group.adminId === parentId)
-      throw new BadRequestException(
-        'Cannot leave from group where you an admin',
-      );
+      throw new BadRequestException(cannotLeaveFromGroupWhereYouAnAdmin);
     group.members = group.members.filter((el) => el.parentId !== parentId);
     await group.save();
   }

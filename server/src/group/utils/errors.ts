@@ -9,3 +9,5 @@ export const dontHaveAccess = 'Немає доступу';
 export const memberNotFound = 'Такого користувача не знайдено';
 export const notInGroup = 'Не є членом группи';
 export const newFileNotFound = 'Новий файл не знайдений';
+export const cannotLeaveFromGroupWhereYouAnAdmin =
+  'Не можна покинути группу, якщо ви є її адміністратором';
