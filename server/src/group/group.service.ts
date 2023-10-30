@@ -22,6 +22,7 @@ import { isChild } from './utils/isChild';
 import {
   alreadyInGroup,
   alreadySendedRequest,
+  cannotLeaveFromGroupWhereYouAnAdmin,
   dontHaveAccess,
   memberNotFound,
   newFileNotFound,
@@ -30,9 +31,7 @@ import {
   notInGroup,
   notaParentOfThisChild,
   requestNotFound,
-  requestToJoinNotFound,
 } from './utils/errors';
-
 
 @Injectable()
 export class GroupService {
@@ -137,18 +136,23 @@ export class GroupService {
       this.findById(groupId),
     ]);
 
-    if (child.parentId !== parent.id) throw new BadRequestException();
+    if (child.parentId !== parent.id)
+      throw new BadRequestException(notaParentOfThisChild);
     if (!group.askingJoin.find((el) => el.childId === childId)) {
-       throw new BadRequestException(requestNotFound);
+      throw new BadRequestException(requestNotFound);
     }
-     group.askingJoin = group.askingJoin.filter(isNotChild(childId));
-    parent.groupJoinRequests = parent.groupJoinRequests.filter(
-      (el) => el !== groupId)
-        if (!parentRequest)
-      throw new BadRequestException('Parent request not found');
+
+    group.askingJoin = group.askingJoin.filter(isNotChild(childId));
+
+    const parentRequest = parent.groupJoinRequests.find(
+      (el) => el.childId === childId && el.groupId === groupId,
+    );
+
+    if (!parentRequest) throw new BadRequestException(requestNotFound);
 
     parent.groupJoinRequests = parent.groupJoinRequests.filter(
-      (el) => el !== parentRequest);
+      (el) => el !== parentRequest,
+    );
 
     await Promise.all([parent.save(), group.save()]);
   }
@@ -171,7 +175,7 @@ export class GroupService {
     const ask = group.askingJoin.find(
       (ask) => ask.parentId === parentId && ask.childId === childId,
     );
-    if (!ask) throw new BadRequestException(requestToJoinNotFound);
+    if (!ask) throw new BadRequestException(requestNotFound);
     if (isAccept) {
       group.members.push({ childId, parentId });
       await this.mailService.sendGroupInvitationAccept(parent.email, group.id);
@@ -262,7 +266,7 @@ export class GroupService {
     await group.deleteOne();
   }
 
-async leaveFromGroup(groupId: string, parentId: string) {
+  async leaveFromGroup(groupId: string, parentId: string) {
     const group = await this.findById(groupId);
     if (!group.members.find((el) => el.parentId === parentId))
       throw new BadRequestException(notInGroup);
