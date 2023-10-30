@@ -11,6 +11,11 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
+import {
+  wrongCredentials,
+  notConfrimedAccount,
+  emailAlreadyTaken,
+} from './utils/errors';
 
 @Injectable()
 export class AuthService {
@@ -25,10 +30,8 @@ export class AuthService {
       loginDto.password,
       parent.password,
     );
-    if (!isPasswordCorrect)
-      throw new UnauthorizedException('Wrong credentials');
-    if (!parent.isConfirmed)
-      throw new BadRequestException('Not confrimed account');
+    if (!isPasswordCorrect) throw new UnauthorizedException(wrongCredentials);
+    if (!parent.isConfirmed) throw new BadRequestException(notConfrimedAccount);
     const jwt = await this.jwtService.sign({
       id: parent._id,
       email: parent.email,
@@ -44,7 +47,7 @@ export class AuthService {
       if (!user.isConfirmed) await user.deleteOne();
     } catch (error) {}
     if (!(await this.parentService.isEmailAvaliable(registerDto.email)))
-      throw new BadRequestException('Email already taken');
+      throw new BadRequestException(emailAlreadyTaken);
     return await this.parentService.createParent(registerDto);
   }
 
