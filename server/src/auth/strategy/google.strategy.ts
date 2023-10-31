@@ -10,7 +10,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super();
   }
   async validate(req: Request) {
-    console.log(req.params.code);
     return this.authService.handleGoogleCode(req.params.code);
   }
 }

@@ -19,23 +19,6 @@ export class AuthService {
     private readonly parentService: ParentService,
   ) {}
 
-  async login(loginDto: LoginDto) {
-    const parent = await this.parentService.findFullInfoByEmail(loginDto.email);
-    const isPasswordCorrect = await bcrypt.compare(
-      loginDto.password,
-      parent.password,
-    );
-    if (!isPasswordCorrect)
-      throw new UnauthorizedException('Wrong credentials');
-    if (!parent.isConfirmed)
-      throw new BadRequestException('Not confrimed account');
-    const jwt = await this.jwtService.sign({
-      id: parent._id,
-      email: parent.email,
-    });
-    return jwt;
-  }
-
   async register(registerDto: RegisterDto) {
     try {
       const user = await this.parentService.findFullInfoByEmail(
@@ -101,7 +84,13 @@ export class AuthService {
   }
 
   async handleGoogleCode(code: string) {
-    //todo google service etc...
-    return await this.parentService.findFullInfoByEmail('simkav2411@gmail.com');//stub
+    const data = this.jwtService.decode(code, {});
+    if (data === null) throw new BadRequestException('Something wrong');
+    const email = data['email'];
+    if (!(await this.parentService.isEmailAvaliable(email))) {
+      return this.parentService.findFullInfoByEmail(email);
+    } else {
+      return await this.parentService.registerWithGoogle(email);
+    }
   }
 }

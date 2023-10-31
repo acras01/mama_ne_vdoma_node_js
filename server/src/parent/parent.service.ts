@@ -218,6 +218,16 @@ export class ParentService {
     return true;
   }
 
+  async registerWithGoogle(email: string) {
+    const parent = await this.parentModel.create({
+      password: 'google',
+      email: email,
+      isConfirmed: true,
+      sendingEmails: true,
+    });
+    return parent;
+  }
+
   private generateFourDigitCode() {
     const randomNumber = Math.floor(Math.random() * 9000) + 1000;
     return randomNumber;

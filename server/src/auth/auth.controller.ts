@@ -7,25 +7,19 @@ import {
   Param,
   Post,
   Req,
-  Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import {
-  ApiBearerAuth,
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
-import { UserData } from './decorators/get-user-from-jwt.decorator';
-import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
-import { AuthGuard } from './guards/auth.guard';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
-import { ResetPasswordDto } from 'src/mail/dto/reset-password.dto';
 import { ResendCodeDto } from './dto/resend-code.dto';
 import { RequestChangeEmail } from './dto/request-change-email.dto';
 import { CodeDto } from './dto/change-email.dto';
@@ -33,6 +27,7 @@ import { CookieAuthenticationGuard } from './guards/coockie.guard';
 import RequestWithSession from './interfaces/req-with-session.interface';
 import { LogInWithCredentialsGuard } from './guards/login-with-credentials.guard';
 import { GoogleCodeAuthGuard } from './guards/google-auth.guard';
+import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
 
 @Controller('auth')
 @ApiTags('auth')
