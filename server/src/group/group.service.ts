@@ -32,12 +32,15 @@ import {
   notaParentOfThisChild,
   requestNotFound,
 } from './utils/errors';
+import { Parent } from 'src/parent/models/parent.model';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectModel(Group)
     private readonly groupModel: ReturnModelType<typeof Group>,
+    @InjectModel(Parent)
+    private readonly parentModel: ReturnModelType<typeof Parent>,
     @Inject(forwardRef(() => ParentService))
     private readonly parentService: ParentService,
     @Inject(forwardRef(() => BackblazeService))
@@ -86,8 +89,11 @@ export class GroupService {
     if (!isAdminInGroup) throw new NotFoundException();
     group.adminId = newAdminId;
     const newAdmin = await this.parentService.findById(newAdminId);
-    await this.mailService.adminTransferNotification(newAdmin.email, group.id);
-    await group.save();
+
+    await Promise.all([
+      this.mailService.adminTransferNotification(newAdmin.email, group.id),
+      group.save(),
+    ]);
   }
 
   async findGroupsByLocation(lon: number, lat: number, radius: number) {
@@ -121,8 +127,8 @@ export class GroupService {
       parentId,
       childId,
     );
-    await parent.save();
-    await group.save();
+
+    await Promise.all([parent.save(), group.save()]);
   }
 
   async cancelGroupMembershipRequest(
@@ -198,12 +204,20 @@ export class GroupService {
   async fullInfo(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
     if (group.adminId !== adminId) throw new ForbiddenException(dontHaveAccess);
-    const parents = await Promise.all([
-      ...group.members.map((member) =>
-        this.parentService.findById(member.parentId),
-      ),
-      ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
-    ]);
+    // const parents = await Promise.all([
+    //   ...group.members.map((member) =>
+    //     this.parentService.findById(member.parentId),
+    //   ),
+    //   ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
+    // ]);
+    const ids = [
+      ...group.members.map((member) => member.parentId),
+      ...group.askingJoin.map((el) => el.parentId),
+    ];
+    // console.log(ids);
+    const parents = await this.parentModel.find().where('_id').in(ids).exec();
+    // console.log(parents);
+
     const preparedParents = parents.map((el) => {
       const {
         password,

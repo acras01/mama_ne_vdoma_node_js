@@ -7,6 +7,7 @@ import { Group } from './models/group.model';
 import { GroupService } from './group.service';
 import { GroupController } from './group.controller';
 import { BackblazeModule } from 'src/backblaze/backblaze.module';
+import { Parent } from 'src/parent/models/parent.model';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { BackblazeModule } from 'src/backblaze/backblaze.module';
     forwardRef(() => ParentModule),
     forwardRef(() => MailModule),
     forwardRef(() => BackblazeModule),
-    TypegooseModule.forFeature([Group]),
+    TypegooseModule.forFeature([Group, Parent]),
   ],
   controllers: [GroupController],
   providers: [GroupService],
