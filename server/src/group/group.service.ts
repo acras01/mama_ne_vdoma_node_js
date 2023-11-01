@@ -86,11 +86,8 @@ export class GroupService {
     if (!isAdminInGroup) throw new NotFoundException();
     group.adminId = newAdminId;
     const newAdmin = await this.parentService.findById(newAdminId);
-
-    await Promise.all([
-      this.mailService.adminTransferNotification(newAdmin.email, group.id),
-      group.save(),
-    ]);
+    this.mailService.adminTransferNotification(newAdmin.email, group.id),
+      group.save();
   }
 
   async findGroupsByLocation(lon: number, lat: number, radius: number) {
