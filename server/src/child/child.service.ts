@@ -58,8 +58,8 @@ export class ChildService {
   }
 
   async findMany(ids: string[]) {
-    const parents = await this.childModel.find().where('_id').in(ids).exec();
-    return parents;
+    const childrens = await this.childModel.find().where('_id').in(ids).exec();
+    return childrens;
   }
 
   async deleteChilds(parentId: string) {

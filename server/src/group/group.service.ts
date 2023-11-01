@@ -32,6 +32,7 @@ import {
   notaParentOfThisChild,
   requestNotFound,
 } from './utils/errors';
+import { checkResponseForIds } from './helpers/checkResponseForIds';
 
 @Injectable()
 export class GroupService {
@@ -207,13 +208,20 @@ export class GroupService {
     //   ),
     //   ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
     // ]);
+    const notExistingParentId = '654235aa57024afedcfd1f43';
     const parentsIds = [
       ...group.members.map((member) => member.parentId),
       ...group.askingJoin.map((el) => el.parentId),
+      notExistingParentId,
     ];
-    // console.log(parentsIds);
+    console.log(parentsIds);
     const parents = await this.parentService.findMany(parentsIds);
-    // console.log(parents);
+    console.log(parents);
+    try {
+      checkResponseForIds(parents, parentsIds);
+    } catch (err) {
+      console.log(err);
+    }
 
     const preparedParents = parents.map((el) => {
       const {
@@ -233,13 +241,20 @@ export class GroupService {
     //     this.childService.findChildById(el.childId),
     //   ),
     // ]);
+    const notExistingChildId = '6542373b1981ed2c620a6ca9';
     const childsIds = [
       ...group.members.map((member) => member.childId),
       ...group.askingJoin.map((el) => el.childId),
+      notExistingChildId,
     ];
-    // console.log(childsIds);
+    console.log(childsIds);
     const childs = await this.childService.findMany(childsIds);
-    // console.log(childs);
+    console.log(childs);
+    try {
+      checkResponseForIds(childs, childsIds);
+    } catch (err) {
+      console.log(err);
+    }
     return { group, parents: preparedParents, childs };
   }
 
