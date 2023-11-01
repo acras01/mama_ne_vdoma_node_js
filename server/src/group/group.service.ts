@@ -32,10 +32,6 @@ import {
   notaParentOfThisChild,
   requestNotFound,
 } from './utils/errors';
-import {
-  checkResponseForChildrensIds,
-  checkResponseForParentsIds,
-} from './helpers/checkResponseForIds';
 
 @Injectable()
 export class GroupService {
@@ -211,7 +207,6 @@ export class GroupService {
       ...group.askingJoin.map((el) => el.parentId),
     ];
     const parents = await this.parentService.findMany(parentsIds);
-    checkResponseForParentsIds(parents, parentsIds);
 
     const preparedParents = parents.map((el) => {
       const {
@@ -229,7 +224,6 @@ export class GroupService {
       ...group.askingJoin.map((el) => el.childId),
     ];
     const childs = await this.childService.findMany(childsIds);
-    checkResponseForChildrensIds(childs, childsIds);
 
     return { group, parents: preparedParents, childs };
   }

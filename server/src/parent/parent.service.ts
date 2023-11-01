@@ -65,6 +65,13 @@ export class ParentService {
 
   async findMany(ids: string[]) {
     const parents = await this.parentModel.find().where('_id').in(ids).exec();
+    const responseIds = parents.map((item) => item._id.toString());
+
+    for (const id of ids) {
+      if (!responseIds.includes(id)) {
+        throw new NotFoundException(`Parent ID ${id} not found`);
+      }
+    }
     return parents;
   }
 
