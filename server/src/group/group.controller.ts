@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -77,7 +79,7 @@ export class GroupController {
   async findGroupWithMemberId(@Param('parentId') parentId: string) {
     return await this.groupService.findGroupsByMember(parentId);
   }
-  @Post('full-info/:groupId')
+  @Get('full-info/:groupId')
   async findFullInfoAboutGroup(
     @Param('groupId') groupId: string,
     @Req() request: RequestWithSession,
@@ -140,6 +142,34 @@ export class GroupController {
       groupId,
       request.user.id,
       updateGroupDto,
+    );
+  }
+  @Post('leave/:groupId')
+  async leaveFromGroup(
+    @Param('groupId') groupId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.leaveFromGroup(groupId, jwtData.id);
+  }
+  @HttpCode(200)
+  @Delete(':groupId')
+  async deleteGroup(
+    @Param('groupId') groupId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.deleteGroup(groupId, jwtData.id);
+  }
+  @HttpCode(200)
+  @Post('cancel-membership/:groupId/:childId')
+  async cancelGroupMembership(
+    @Param('groupId') groupId: string,
+    @Param('childId') childId: string,
+    @UserData() jwtData: IJwtData,
+  ) {
+    await this.groupService.cancelGroupMembershipRequest(
+      groupId,
+      jwtData.id,
+      childId,
     );
   }
 }

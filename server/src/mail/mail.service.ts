@@ -23,8 +23,10 @@ export class MailService {
     this.from = this.configService.get('SMTP_USER');
   }
 
+  //TODO add queue and send mails throug queue
+
   async sendConfirmationEmail(sendConfirmationEmail: SendConfirmationEmail) {
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: sendConfirmationEmail.email,
       from: this.from,
       text: sendConfirmationEmail.code,
@@ -32,11 +34,11 @@ export class MailService {
       <head>
       <body>
       <div style="background-color: #FFF; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Вітаємо вас у застосунку<a href="http://mommy-not-home.online/">"Мама не вдома"!</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Вітаємо вас у застосунку<a href="https://mommy-not-home.online/">"Мама не вдома"!</a></h2>
       <p style="text-align: center;">На ваш запит надсилаємо вам одноразовий пароль для підтвердження вашого емейлу:</p>
       <h3 style="text-align: center;">${sendConfirmationEmail.code}</h3>
-      <p style="text-align: center;"><span>Будьласка, введіть цей пароль у вікно запиту в мобільному застосунку для завершення реєстрації.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
+      <p style="text-align: center;"><span>Будь ласка, введіть цей пароль у вікно запиту в мобільному застосунку для завершення реєстрації.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
       <p style="text-align: center;"><span>Якщо це не ви реєструвались в мобільному застосунку "Мама не вдома" - не хвилюйтеся, та просто не реагуйте на це повідомлення. Ми видалимо ваш емейл з нашої бази даних назавжди.</span></p>
       </body>
       </head>
@@ -44,19 +46,18 @@ export class MailService {
 `,
       subject: 'Confirmation Email',
     });
-    return result;
   }
 
   async sendPasswordResetCode(sendConfirmationEmail: SendConfirmationEmail) {
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: sendConfirmationEmail.email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #FFF; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Знов раді бачити вас у застосунку <a href="http://mommy-not-home.online/">"Мама не вдома"!</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Знов раді бачити вас у застосунку <a href="https://mommy-not-home.online/">"Мама не вдома"!</a></h2>
       <p style="text-align: center;">Для відновлення вашого доступу в застосунок, надсилаємо вам цей одноразовий пароль:</p>
       <h3 style="text-align: center;">${sendConfirmationEmail.code}</h3>
       <p style="text-align: center;"><span>Будьласка, введіть цей пароль у вікно запиту в мобільному застосунку, а далі встановіть новий пароль для входу в застосунок.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
@@ -66,8 +67,6 @@ export class MailService {
       `,
       subject: 'Password reset code',
     });
-
-    return result;
   }
 
   async sendGroupJoiningRequest(
@@ -79,19 +78,19 @@ export class MailService {
     if (!parent.sendingEmails) return;
     const childs = await this.childService.getChilds(parentId);
     const child = await this.childService.findChildById(childId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #FFF; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Вам надійшов запит на приєднання нового учасника (нової учасниці) групи по долгяду за дітьми в застосунку <a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Вам надійшов запит на приєднання нового учасника (нової учасниці) групи по догляду за дітьми в застосунку <a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 56px;">
       <tbody>
       <tr style="height: 10px;">
-      <td style="width: 25%; height: 10px;"><img src="https://tough-moth-trunks.cyclic.cloud/api/files/${
+      <td style="width: 25%; height: 10px;"><img src="https://mommy-not-home.online/back/api/files/${
         parent.avatar
       }" alt="user_avatar" width="120" height="120" style="display: block; margin-left: auto; margin-right: auto;" /></td>
       <td style="width: 40%; height: 10px;">
@@ -126,15 +125,15 @@ export class MailService {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Повідомляємо вас, що ви більше не є учасником наступної групи догляду за дітьми в застосунку &nbsp;<a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Повідомляємо вас, що ви більше не є учасником наступної групи догляду за дітьми в застосунку &nbsp;<a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
       <tbody>
       <tr style="height: 10px;">
@@ -162,31 +161,29 @@ export class MailService {
       `,
       subject: 'Kicked from group notification',
     });
-    return result;
   }
 
   async sendChangeEmailCode(email: string, code: string) {
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       text: `${code}`,
       subject: 'Change email request',
     });
-    return result;
   }
 
   async sendEmailChanged(email: string, oldEmail: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: oldEmail,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Повдомлення про зміну контактних даних у застосунку <a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Повдомлення про зміну контактних даних у застосунку <a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <p style="text-align: center;">Ваш логін (емейл) для доступу у застосунок щойно було змінено на наступний:</p>
       <h3 style="text-align: center;">${email}</h3>
       <p style="text-align: center;"><span>Якщо це зробили не ви - негайно дайте нам знати про це на адресу: <strong>app.mama.ne.vdoma@gmail.com</strong>.</span><br /><em>Це автоматично створене системою повідомлення, вам не треба на нього відповідати.</em><span>&nbsp;</span></p>
@@ -197,21 +194,20 @@ export class MailService {
       `,
       subject: 'Email changed',
     });
-    return result;
   }
 
   async sendGroupInvitationReject(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
       <h2 style="text-align: center;">Нажаль, адміністратором групи було відхилено ваш запит на приєднання до наступної групи:</h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
       <tbody>
@@ -235,22 +231,21 @@ export class MailService {
       `,
       subject: 'Rejecting group request',
     });
-    return result;
   }
 
   async sendGroupInvitationAccept(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Вітаємо! Адміністратор схвалив ваш запит на приєднання до групи догляду за дітьми у застосунку&nbsp;<a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Вітаємо! Адміністратор схвалив ваш запит на приєднання до групи догляду за дітьми у застосунку&nbsp;<a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
       <tbody>
       <tr style="height: 10px;">
@@ -273,22 +268,21 @@ export class MailService {
             `,
       subject: 'Accepting group request',
     });
-    return result;
   }
 
   async groupCreatedNotification(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+     this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Вітаємо! Ви успішно створили нову групу догляду за дітьми у застосунку&nbsp;<a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Вітаємо! Ви успішно створили нову групу догляду за дітьми у застосунку&nbsp;<a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
       <tbody>
       </tr>
@@ -318,22 +312,21 @@ export class MailService {
 `,
       subject: 'Accepting group request',
     });
-    return result;
   }
 
   async adminTransferNotification(email: string, groupId: string) {
     const parent = await this.parentService.findByEmail(email);
     if (!parent.sendingEmails) return;
     const group = await this.groupService.findById(groupId);
-    const result = await this.mailer.sendMail({
+    this.mailer.sendMail({
       to: email,
       from: this.from,
       html: `
       <head>
       <body>
       <div style="background-color: #fff; max-width: 800px; margin: auto; padding: 20px;">
-      <p><a href="http://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
-      <h2 style="text-align: center;">Вас призначено адміністратором наступної групи догляду за дітьми в застосунку &nbsp;<a href="http://mommy-not-home.online/">"Мама не вдома":</a></h2>
+      <p><a href="https://mommy-not-home.online/"><img src="https://static.wixstatic.com/media/ede167_9f3af53b548241b887b0eee913eec9ca~mv2.png" width="120" height="120" alt="" style="display: block; margin-left: auto; margin-right: auto;" /></a></p>
+      <h2 style="text-align: center;">Вас призначено адміністратором наступної групи догляду за дітьми в застосунку &nbsp;<a href="https://mommy-not-home.online/">"Мама не вдома":</a></h2>
       <table border="0" style="border-collapse: collapse; width: 100%; height: 20px;">
       <tbody>
       <tr style="height: 10px;">
@@ -362,6 +355,5 @@ export class MailService {
       `,
       subject: 'Group admin transfer',
     });
-    return result;
   }
 }

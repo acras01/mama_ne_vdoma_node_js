@@ -11,6 +11,11 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
+import {
+  wrongCredentials,
+  notConfrimedAccount,
+  emailAlreadyTaken,
+} from './utils/errors';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +24,21 @@ export class AuthService {
     private readonly parentService: ParentService,
   ) {}
 
+  async login(loginDto: LoginDto) {
+    const parent = await this.parentService.findFullInfoByEmail(loginDto.email);
+    const isPasswordCorrect = await bcrypt.compare(
+      loginDto.password,
+      parent.password,
+    );
+    if (!isPasswordCorrect) throw new UnauthorizedException(wrongCredentials);
+    if (!parent.isConfirmed) throw new BadRequestException(notConfrimedAccount);
+    const jwt = await this.jwtService.sign({
+      id: parent._id,
+      email: parent.email,
+    });
+    return jwt;
+  }
+  
   async register(registerDto: RegisterDto) {
     try {
       const user = await this.parentService.findFullInfoByEmail(
@@ -27,7 +47,7 @@ export class AuthService {
       if (!user.isConfirmed) await user.deleteOne();
     } catch (error) {}
     if (!(await this.parentService.isEmailAvaliable(registerDto.email)))
-      throw new BadRequestException('Email already taken');
+      throw new BadRequestException(emailAlreadyTaken);
     return await this.parentService.createParent(registerDto);
   }
 

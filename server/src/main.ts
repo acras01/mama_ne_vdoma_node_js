@@ -12,7 +12,7 @@ import { IEnv } from './configs/env.config';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', 1);
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('back/api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   const configService = app.get(ConfigService<IEnv>);
   app.enableCors();
@@ -34,7 +34,8 @@ async function bootstrap() {
     .addCookieAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('back/swagger', app, document);
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();

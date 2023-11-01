@@ -19,7 +19,7 @@ export class UpdateParentDto {
   @IsString()
   @Matches(/^[a-zA-Zа-яА-Яі0-9 -]+$/gm, { message: 'Must include only letters,- or space' })
   @IsNotEmpty()
-  @Length(6, 18)
+  @Length(2, 18)
   @IsOptional()
   name: string;
   @ApiProperty()
