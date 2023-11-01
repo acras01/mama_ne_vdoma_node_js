@@ -63,6 +63,11 @@ export class ParentService {
     return findedDoc;
   }
 
+  async findMany(ids: string[]) {
+    const parents = await this.parentModel.find().where('_id').in(ids).exec();
+    return parents;
+  }
+
   async findFullInfoByEmail(email: string) {
     const findedDoc = await this.parentModel
       .findOne({ email })

@@ -32,15 +32,12 @@ import {
   notaParentOfThisChild,
   requestNotFound,
 } from './utils/errors';
-import { Parent } from 'src/parent/models/parent.model';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectModel(Group)
     private readonly groupModel: ReturnModelType<typeof Group>,
-    @InjectModel(Parent)
-    private readonly parentModel: ReturnModelType<typeof Parent>,
     @Inject(forwardRef(() => ParentService))
     private readonly parentService: ParentService,
     @Inject(forwardRef(() => BackblazeService))
@@ -210,12 +207,12 @@ export class GroupService {
     //   ),
     //   ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
     // ]);
-    const ids = [
+    const parentsIds = [
       ...group.members.map((member) => member.parentId),
       ...group.askingJoin.map((el) => el.parentId),
     ];
-    // console.log(ids);
-    const parents = await this.parentModel.find().where('_id').in(ids).exec();
+    // console.log(parentsIds);
+    const parents = await this.parentService.findMany(parentsIds);
     // console.log(parents);
 
     const preparedParents = parents.map((el) => {
@@ -228,14 +225,21 @@ export class GroupService {
       } = el.toObject();
       return parent;
     });
-    const childs = await Promise.all([
-      ...group.members.map((member) =>
-        this.childService.findChildById(member.childId),
-      ),
-      ...group.askingJoin.map((el) =>
-        this.childService.findChildById(el.childId),
-      ),
-    ]);
+    // const childs = await Promise.all([
+    //   ...group.members.map((member) =>
+    //     this.childService.findChildById(member.childId),
+    //   ),
+    //   ...group.askingJoin.map((el) =>
+    //     this.childService.findChildById(el.childId),
+    //   ),
+    // ]);
+    const childsIds = [
+      ...group.members.map((member) => member.childId),
+      ...group.askingJoin.map((el) => el.childId),
+    ];
+    // console.log(childsIds);
+    const childs = await this.childService.findMany(childsIds);
+    // console.log(childs);
     return { group, parents: preparedParents, childs };
   }
 
