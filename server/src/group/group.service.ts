@@ -32,7 +32,10 @@ import {
   notaParentOfThisChild,
   requestNotFound,
 } from './utils/errors';
-import { checkResponseForIds } from './helpers/checkResponseForIds';
+import {
+  checkResponseForChildrensIds,
+  checkResponseForParentsIds,
+} from './helpers/checkResponseForIds';
 
 @Injectable()
 export class GroupService {
@@ -202,26 +205,13 @@ export class GroupService {
   async fullInfo(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
     if (group.adminId !== adminId) throw new ForbiddenException(dontHaveAccess);
-    // const parents = await Promise.all([
-    //   ...group.members.map((member) =>
-    //     this.parentService.findById(member.parentId),
-    //   ),
-    //   ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
-    // ]);
-    const notExistingParentId = '654235aa57024afedcfd1f43';
+
     const parentsIds = [
       ...group.members.map((member) => member.parentId),
       ...group.askingJoin.map((el) => el.parentId),
-      notExistingParentId,
     ];
-    console.log(parentsIds);
     const parents = await this.parentService.findMany(parentsIds);
-    console.log(parents);
-    try {
-      checkResponseForIds(parents, parentsIds);
-    } catch (err) {
-      console.log(err);
-    }
+    checkResponseForParentsIds(parents, parentsIds);
 
     const preparedParents = parents.map((el) => {
       const {
@@ -233,28 +223,14 @@ export class GroupService {
       } = el.toObject();
       return parent;
     });
-    // const childs = await Promise.all([
-    //   ...group.members.map((member) =>
-    //     this.childService.findChildById(member.childId),
-    //   ),
-    //   ...group.askingJoin.map((el) =>
-    //     this.childService.findChildById(el.childId),
-    //   ),
-    // ]);
-    const notExistingChildId = '6542373b1981ed2c620a6ca9';
+
     const childsIds = [
       ...group.members.map((member) => member.childId),
       ...group.askingJoin.map((el) => el.childId),
-      notExistingChildId,
     ];
-    console.log(childsIds);
     const childs = await this.childService.findMany(childsIds);
-    console.log(childs);
-    try {
-      checkResponseForIds(childs, childsIds);
-    } catch (err) {
-      console.log(err);
-    }
+    checkResponseForChildrensIds(childs, childsIds);
+
     return { group, parents: preparedParents, childs };
   }
 
