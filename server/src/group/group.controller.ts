@@ -12,7 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
-import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
@@ -147,28 +152,28 @@ export class GroupController {
   @Post('leave/:groupId')
   async leaveFromGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    await this.groupService.leaveFromGroup(groupId, jwtData.id);
+    await this.groupService.leaveFromGroup(groupId, request.user.id);
   }
   @HttpCode(200)
   @Delete(':groupId')
   async deleteGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    await this.groupService.deleteGroup(groupId, jwtData.id);
+    await this.groupService.deleteGroup(groupId, request.user.id);
   }
   @HttpCode(200)
   @Post('cancel-membership/:groupId/:childId')
   async cancelGroupMembership(
     @Param('groupId') groupId: string,
     @Param('childId') childId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
     await this.groupService.cancelGroupMembershipRequest(
       groupId,
-      jwtData.id,
+      request.user.id,
       childId,
     );
   }
