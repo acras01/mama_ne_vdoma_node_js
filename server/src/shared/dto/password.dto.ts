@@ -1,11 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString, IsStrongPassword, Length } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger';
+import { LengthCustom } from 'src/decorators/LengthCustom';
+import { IsNotEmptyPasswordCustom } from 'src/decorators/isNotEmptyPasswordCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { IsStrongPasswordCustom } from 'src/decorators/isStrongPasswordCustom';
 
 export class PasswordDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyPasswordCustom()
+  @IsStringCustom()
   @ApiProperty()
-  @Length(6, 24)
-  @IsStrongPassword({ minNumbers: 1, minSymbols: 1, minLength: 6 })
-  password: string
+  @LengthCustom()
+  @IsStrongPasswordCustom()
+  password: string;
 }
