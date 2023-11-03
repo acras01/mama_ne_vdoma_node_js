@@ -77,7 +77,6 @@ export class GroupController {
     @Query('lon') lon: number,
     @Query('radius') radius: number,
   ) {
-    console.log('');
     return await this.groupService.findGroupsByLocation(lon, lat, radius);
   }
   @Get('find/:parentId')

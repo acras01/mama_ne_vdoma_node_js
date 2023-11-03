@@ -9,7 +9,6 @@ import {
 export class CookieAuthenticationGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    console.log(request.isAuthenticated());
     if (!request.isAuthenticated()) throw new UnauthorizedException();
     return true;
   }

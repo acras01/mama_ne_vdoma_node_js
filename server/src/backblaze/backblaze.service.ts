@@ -85,7 +85,5 @@ export class BackblazeService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   private async _refreshBb2Token() {
     const res = await this.bb2.authorize();
-    console.log(res);
-    console.log('updated?')
   }
 }
