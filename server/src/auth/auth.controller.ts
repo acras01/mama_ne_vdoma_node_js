@@ -40,16 +40,25 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   @ApiOkResponse()
+  @UseGuards(CookieAuthenticationGuard)
   @UseGuards(LogInWithCredentialsGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async login(@Body() loginDto: LoginDto) {}
+  async login(@Body() loginDto: LoginDto, @Req() request: RequestWithSession) {
+    return { id: request.user.id };
+  }
 
   @Post('google/:code')
   @HttpCode(200)
   @ApiOkResponse()
+  @UseGuards(CookieAuthenticationGuard)
   @UseGuards(GoogleCodeAuthGuard)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async googleAuth(@Param('code') code: string) {}
+  async googleAuth(
+    @Param('code') code: string,
+    @Req() request: RequestWithSession,
+  ) {
+    return { id: request.user.id };
+  }
 
   @Post('register')
   @ApiCreatedResponse()
@@ -113,7 +122,6 @@ export class AuthController {
   @UseGuards(CookieAuthenticationGuard)
   @Post('logout')
   async logOut(@Req() request: RequestWithSession) {
-    console.log(request.user);
     request.logOut(() => true);
     request.session.cookie.maxAge = 0;
   }
