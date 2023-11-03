@@ -5,10 +5,10 @@ import { IsStringCustom } from 'src/decorators/isStringCustom';
 import { IsStrongPasswordCustom } from 'src/decorators/isStrongPasswordCustom';
 
 export class PasswordDto {
-  @IsNotEmptyPasswordCustom()
   @IsStringCustom()
   @ApiProperty()
   @LengthCustom()
   @IsStrongPasswordCustom()
+  @IsNotEmptyPasswordCustom()
   password: string;
 }

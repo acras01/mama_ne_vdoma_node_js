@@ -6,8 +6,8 @@ import { PasswordDto } from 'src/shared/dto/password.dto';
 
 export class RegisterDto extends PasswordDto {
   @ApiProperty()
-  @IsNotEmptyEmailCustom()
   @IsStringCustom()
   @IsEmailCustom()
+  @IsNotEmptyEmailCustom()
   email: string;
 }

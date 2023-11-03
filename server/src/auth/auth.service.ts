@@ -13,8 +13,8 @@ import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
 import {
   wrongCredentials,
-  notConfrimedAccount,
   emailAlreadyTaken,
+  notConfrimedAccount,
 } from './utils/errors';
 
 @Injectable()
