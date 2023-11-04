@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmailCustom } from 'src/decorators/isEmailCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
 
 export class ConfirmEmailDto {
   @ApiProperty()
-  @IsString()
-  @IsEmail()
+  @IsStringCustom()
+  @IsEmailCustom()
   email: string;
-  @IsString()
+  @IsStringCustom()
   @ApiProperty()
   code: string;
 }

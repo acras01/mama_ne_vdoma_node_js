@@ -7,7 +7,7 @@ import { IsStrongPasswordCustom } from 'src/decorators/isStrongPasswordCustom';
 export class PasswordDto {
   @IsStringCustom()
   @ApiProperty()
-  @LengthCustom()
+  @LengthCustom(6, 24)
   @IsStrongPasswordCustom()
   @IsNotEmptyPasswordCustom()
   password: string;

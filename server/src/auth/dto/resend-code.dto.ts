@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmptyEmailCustom } from 'src/decorators/isNotEmptyEmailCustom';
+import { IsEmailCustom } from 'src/decorators/isEmailCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
 
 export class ResendCodeDto {
   @ApiProperty()
-  @IsEmail()
-  @IsString()
-  @IsNotEmpty()
+  @IsEmailCustom()
+  @IsStringCustom()
+  @IsNotEmptyEmailCustom()
   email: string;
 }

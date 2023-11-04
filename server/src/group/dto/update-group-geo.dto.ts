@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
+import { IsNumberCustom } from 'src/decorators/isNumberCustom';
 
 export class UpdateGroupGeoDto {
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   @IsOptional()
   lat: number;
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   @IsOptional()
   lon: number;
 }

@@ -1,10 +1,11 @@
 import { ValidationOptions, ValidateBy } from 'class-validator';
 
-export function LengthCustom(validationOptions?: ValidationOptions) {
+export function LengthCustom(
+  minLength,
+  maxLength,
+  validationOptions?: ValidationOptions,
+) {
   return function (object: object, propertyName: string) {
-    const minLength = 6;
-    const maxLength = 24;
-
     ValidateBy(
       {
         name: 'lengthCustom',

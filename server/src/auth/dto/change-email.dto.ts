@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEmailCustom } from 'src/decorators/isEmailCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
 
 export class CodeDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsEmailCustom()
+  @IsStringCustom()
   code: string;
 }

@@ -6,7 +6,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('back/api');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, stopAtFirstError: true }),
+  );
   const config = new DocumentBuilder()
     .setTitle('Mama ne vdoma')
     .setDescription('Mama ne vdoma API description')
