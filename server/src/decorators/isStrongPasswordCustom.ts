@@ -20,7 +20,7 @@ export function IsStrongPasswordCustom(validationOptions?: ValidationOptions) {
           });
         },
         defaultMessage() {
-          return 'Пароль не відповідає вимогам (мінімум 6 символов, 1 число и 1 символ)';
+          return 'Пароль не відповідає вимогам (мінімум 6 символів, 1 число та 1 символ)';
         },
       },
     });
