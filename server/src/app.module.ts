@@ -16,6 +16,7 @@ import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-arr
 import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filter';
 import { GroupModule } from './group/group.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { FirebaseModule } from './firebase/firebase.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MailModule,
     ChildModule,
     GroupModule,
+    FirebaseModule,
   ],
   controllers: [AppController],
   providers: [

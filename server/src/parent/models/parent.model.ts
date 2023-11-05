@@ -59,6 +59,9 @@ export class Parent {
   // TODO fix
   @prop({ required: false })
   week: unknown;
+
+  @prop({requried:false})
+  deviceId:string
 }
 
 export class IGroupJoinRequest {
