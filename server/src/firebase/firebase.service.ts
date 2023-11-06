@@ -11,6 +11,7 @@ export class FirebaseService {
     message: FirebaseMessageEnumType,
     additionalData?,
   ) {
+    if(!deviceId) return
     const newMessage: Message = {
       token: deviceId,
       data: { type: message, ...additionalData },
