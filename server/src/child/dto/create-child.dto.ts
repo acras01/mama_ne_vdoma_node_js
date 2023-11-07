@@ -10,7 +10,7 @@ export class CreateChildDto {
   @IsNotEmptyCustom()
   name: string;
   @ApiProperty()
-  @IsNumberCustom()
+  @IsNumberCustom(0, 18)
   age: number;
   @ApiProperty()
   @IsBooleanCustom()

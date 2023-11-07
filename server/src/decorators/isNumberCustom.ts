@@ -4,7 +4,11 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
-export function IsNumberCustom(validationOptions?: ValidationOptions) {
+export function IsNumberCustom(
+  min,
+  max,
+  validationOptions?: ValidationOptions,
+) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isNumberWithinRange',
@@ -13,13 +17,13 @@ export function IsNumberCustom(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          if (typeof value === 'number' && value >= 0 && value <= 18) {
+          if (typeof value === 'number' && value >= min && value <= max) {
             return true;
           }
           return false;
         },
         defaultMessage(args: ValidationArguments) {
-          return `Поле ${args.property} має бути числом в діапазоні від 0 до 18`;
+          return `Поле ${args.property} має бути числом в діапазоні від ${min} до ${max}`;
         },
       },
     });

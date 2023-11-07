@@ -4,11 +4,11 @@ import { IsNumberCustom } from 'src/decorators/isNumberCustom';
 
 export class UpdateGroupGeoDto {
   @ApiProperty()
-  @IsNumberCustom()
+  @IsNumberCustom(0, 18)
   @IsOptional()
   lat: number;
   @ApiProperty()
-  @IsNumberCustom()
+  @IsNumberCustom(0, 18)
   @IsOptional()
   lon: number;
 }
