@@ -62,6 +62,9 @@ export class Parent {
 
   @prop({requried:false})
   deviceId:string
+
+  @prop({requried:false})
+  note:string;
 }
 
 export class IGroupJoinRequest {

@@ -48,6 +48,11 @@ export class UpdateParentDto {
   @IsNotEmpty()
   @IsOptional()
   avatar: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  note:string;
   @ApiProperty({ type: WeekDto })
   @IsDefined()
   @IsNotEmptyObject()
