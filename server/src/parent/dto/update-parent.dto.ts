@@ -1,46 +1,41 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsDefined,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsObject,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { WeekDto } from '../../shared/dto/week.dto';
+import { MatchesCustom } from 'src/decorators/matchesCustom';
+import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { IsBooleanCustom } from 'src/decorators/isBooleanCustom';
+import { IsDefinedCustom } from 'src/decorators/isDefinedCustom';
+import { IsNotEmptyObjectCustom } from 'src/decorators/isNotEmptyObjectCustom';
+import { IsObjectCustom } from 'src/decorators/isObjectCustom';
+import { LengthCustom } from 'src/decorators/LengthCustom';
 
 export class UpdateParentDto {
   @ApiProperty()
-  @IsString()
-  @Matches(/^[a-zA-Zа-яА-Яі0-9 -]+$/gm, {
-    message: 'Must include only letters,- or space',
-  })
-  @IsNotEmpty()
-  @Length(2, 18)
+  @IsStringCustom()
+  @MatchesCustom()
+  @IsNotEmptyCustom()
+  @LengthCustom(2, 18)
   @IsOptional()
   name: string;
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
   phone: string;
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   @IsOptional()
   sendingEmails: boolean;
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
   countryCode: string;
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
   deviceId: string;
   @ApiProperty()
@@ -54,9 +49,9 @@ export class UpdateParentDto {
   @IsOptional()
   note:string;
   @ApiProperty({ type: WeekDto })
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => WeekDto)
   @IsOptional()

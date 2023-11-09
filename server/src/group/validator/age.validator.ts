@@ -25,7 +25,7 @@ export class GroupAgeValidateRule implements ValidatorConstraintInterface {
   }
 
   defaultMessage() {
-    return `Wrong format in field age`;
+    return `Невірний формат в полі віку`;
   }
 }
 

@@ -1,24 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsBooleanCustom } from 'src/decorators/isBooleanCustom';
+import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
+import { IsNumberCustom } from 'src/decorators/isNumberCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
 
 export class CreateChildDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   name: string;
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
-  @Max(18)
+  @IsNumberCustom(0, 18)
   age: number;
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   isMale: boolean;
 }

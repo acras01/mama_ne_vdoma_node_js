@@ -1,17 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-} from 'class-validator';
+import { IsEmailCustom } from 'src/decorators/isEmailCustom';
+import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
 
 export class FindParentDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @IsEmail()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
+  @IsEmailCustom()
   email: string;
 }

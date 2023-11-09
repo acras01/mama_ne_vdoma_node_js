@@ -56,6 +56,18 @@ export class ChildService {
     return true;
   }
 
+  async findMany(ids: string[]) {
+    const childrens = await this.childModel.find().where('_id').in(ids).exec();
+    const responseIds = childrens.map((item) => item._id.toString());
+
+    for (const id of ids) {
+      if (!responseIds.includes(id)) {
+        throw new NotFoundException(`Children ID ${id} not found`);
+      }
+    }
+    return childrens;
+  }
+
   async deleteChilds(parentId: string) {
     const result = await this.childModel.deleteMany({ parentId });
     return result;

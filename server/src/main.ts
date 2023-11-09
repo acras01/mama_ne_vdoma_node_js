@@ -13,7 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', 1);
   app.setGlobalPrefix('back/api');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true,stopAtFirstError: true }));
   const configService = app.get(ConfigService<IEnv>);
   app.enableCors();
   app.use(

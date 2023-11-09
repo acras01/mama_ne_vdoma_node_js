@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
+import { IsNumberCustom } from 'src/decorators/isNumberCustom';
 
 export class UpdateGeoDto {
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
+  @IsNumberCustom(0, 18)
+  @IsNotEmptyCustom()
   lon: number;
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
+  @IsNumberCustom(0, 18)
+  @IsNotEmptyCustom()
   lat: number;
 }

@@ -1,15 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
-import { PasswordDto } from 'src/shared/dto/password.dto'
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmailCustom } from 'src/decorators/isEmailCustom';
+import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { PasswordDto } from 'src/shared/dto/password.dto';
 
 export class ResetPasswordDto extends PasswordDto {
   @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
-  email: string
+  @IsEmailCustom()
+  @IsNotEmptyCustom()
+  email: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  code: string
+  @IsStringCustom()
+  @IsNotEmptyCustom()
+  code: string;
 }

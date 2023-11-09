@@ -1,43 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsDefined,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsObject,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, ValidateNested } from 'class-validator';
 import { WeekDto } from 'src/shared/dto/week.dto';
 import { GroupAgeValidate } from '../validator/age.validator';
+import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
+import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { IsDefinedCustom } from 'src/decorators/isDefinedCustom';
+import { IsObjectCustom } from 'src/decorators/isObjectCustom';
+import { IsNotEmptyObjectCustom } from 'src/decorators/isNotEmptyObjectCustom';
 
 export class UpdateGroupDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   @IsOptional()
   name: string;
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   @IsOptional()
   desc: string;
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   @IsOptional()
   @GroupAgeValidate()
   ages: string;
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   @IsOptional()
   avatar: string;
   @ApiProperty({ type: WeekDto })
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => WeekDto)
   @IsOptional()

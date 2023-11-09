@@ -136,8 +136,7 @@ export class GroupService {
         FirebaseMessageEnum.USER_GROUP_REQUEST,
         { groupId: groupId, userId: parentId },
       );
-    await parent.save();
-    await group.save();
+  await Promise.all([parent.save(), group.save()]);
   }
 
   async cancelGroupMembershipRequest(
@@ -224,12 +223,13 @@ export class GroupService {
   async fullInfo(groupId: string, adminId: string) {
     const group = await this.findById(groupId);
     if (group.adminId !== adminId) throw new ForbiddenException(dontHaveAccess);
-    const parents = await Promise.all([
-      ...group.members.map((member) =>
-        this.parentService.findById(member.parentId),
-      ),
-      ...group.askingJoin.map((el) => this.parentService.findById(el.parentId)),
-    ]);
+
+    const parentsIds = [
+      ...group.members.map((member) => member.parentId),
+      ...group.askingJoin.map((el) => el.parentId),
+    ];
+    const parents = await this.parentService.findMany(parentsIds);
+
     const preparedParents = parents.map((el) => {
       const {
         password,
@@ -240,14 +240,13 @@ export class GroupService {
       } = el.toObject();
       return parent;
     });
-    const childs = await Promise.all([
-      ...group.members.map((member) =>
-        this.childService.findChildById(member.childId),
-      ),
-      ...group.askingJoin.map((el) =>
-        this.childService.findChildById(el.childId),
-      ),
-    ]);
+
+    const childsIds = [
+      ...group.members.map((member) => member.childId),
+      ...group.askingJoin.map((el) => el.childId),
+    ];
+    const childs = await this.childService.findMany(childsIds);
+
     return { group, parents: preparedParents, childs };
   }
 
