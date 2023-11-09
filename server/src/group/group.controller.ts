@@ -8,21 +8,26 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/guards/auth.guards';
+import {
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateGroupDto } from './dto/create-group.dto';
-import { UserData } from '../auth/decorators/get-user-from-jwt.decorator';
-import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { UpdateGeoDto } from '../shared/dto/update-geo.dto';
+import { CookieAuthenticationGuard } from '../auth/guards/coockie.guard';
+import RequestWithSession from '../auth/interfaces/req-with-session.interface';
 
 @ApiTags('group')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @Controller('group')
-@UseGuards(AuthGuard)
+@UseGuards(CookieAuthenticationGuard)
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
   @Post('join/:groupId/:childId')
@@ -30,20 +35,24 @@ export class GroupController {
   async requestJoinGroup(
     @Param('childId') childId: string,
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    return await this.groupService.askToJoinGroup(jwtData.id, childId, groupId);
+    return await this.groupService.askToJoinGroup(
+      request.user.id,
+      childId,
+      groupId,
+    );
   }
   @Post('accept/:groupId/:childId')
   @ApiOperation({ summary: 'Decline request in groupId with childId' })
   async acceptRequest(
     @Param('childId') childId: string,
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
     return await this.groupService.resolveJoinGroup(
       groupId,
-      jwtData.id,
+      request.user.id,
       childId,
       true,
     );
@@ -53,11 +62,11 @@ export class GroupController {
   async rejectRequest(
     @Param('childId') childId: string,
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
     return await this.groupService.resolveJoinGroup(
       groupId,
-      jwtData.id,
+      request.user.id,
       childId,
       false,
     );
@@ -68,7 +77,6 @@ export class GroupController {
     @Query('lon') lon: number,
     @Query('radius') radius: number,
   ) {
-    console.log('');
     return await this.groupService.findGroupsByLocation(lon, lat, radius);
   }
   @Get('find/:parentId')
@@ -78,27 +86,27 @@ export class GroupController {
   @Get('full-info/:groupId')
   async findFullInfoAboutGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    return await this.groupService.fullInfo(groupId, jwtData.id);
+    return await this.groupService.fullInfo(groupId, request.user.id);
   }
   @Post('kick/:groupId/:childId')
   async kickMember(
     @Param('groupId') groupId: string,
     @Param('childId') childId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    return await this.groupService.kick(groupId, childId, jwtData.id);
+    return await this.groupService.kick(groupId, childId, request.user.id);
   }
   @Post(':childId')
   @ApiOperation({ summary: 'Create group with childrenId' })
   async createGroup(
     @Param('childId') childId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
     @Body() createGroupDto: CreateGroupDto,
   ) {
     return await this.groupService.createGroup(
-      jwtData.id,
+      request.user.id,
       childId,
       createGroupDto,
     );
@@ -112,51 +120,59 @@ export class GroupController {
   async changeAdming(
     @Param('groupId') groupId: string,
     @Param('parentId') parentId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    await this.groupService.changeAdmin(groupId, jwtData.id, parentId);
+    await this.groupService.changeAdmin(groupId, request.user.id, parentId);
   }
   @Patch('geo/:groupId')
   async updateGeoGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
     @Body() updateGeoDto: UpdateGeoDto,
   ) {
-    await this.groupService.updateGroupGeo(groupId, jwtData.id, updateGeoDto);
+    await this.groupService.updateGroupGeo(
+      groupId,
+      request.user.id,
+      updateGeoDto,
+    );
   }
   @Patch(':groupId')
   async updateGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
     @Body() updateGroupDto: UpdateGroupDto,
   ) {
-    await this.groupService.updateGroup(groupId, jwtData.id, updateGroupDto);
+    await this.groupService.updateGroup(
+      groupId,
+      request.user.id,
+      updateGroupDto,
+    );
   }
   @Post('leave/:groupId')
   async leaveFromGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    await this.groupService.leaveFromGroup(groupId, jwtData.id);
+    await this.groupService.leaveFromGroup(groupId, request.user.id);
   }
   @HttpCode(200)
   @Delete(':groupId')
   async deleteGroup(
     @Param('groupId') groupId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    await this.groupService.deleteGroup(groupId, jwtData.id);
+    await this.groupService.deleteGroup(groupId, request.user.id);
   }
   @HttpCode(200)
   @Post('cancel-membership/:groupId/:childId')
   async cancelGroupMembership(
     @Param('groupId') groupId: string,
     @Param('childId') childId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
     await this.groupService.cancelGroupMembershipRequest(
       groupId,
-      jwtData.id,
+      request.user.id,
       childId,
     );
   }

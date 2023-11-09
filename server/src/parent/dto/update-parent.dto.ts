@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { WeekDto } from '../../shared/dto/week.dto';
 import { MatchesCustom } from 'src/decorators/matchesCustom';
@@ -13,7 +13,7 @@ import { LengthCustom } from 'src/decorators/LengthCustom';
 
 export class UpdateParentDto {
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   @MatchesCustom()
   @IsNotEmptyCustom()
   @LengthCustom(2, 18)
@@ -37,7 +37,17 @@ export class UpdateParentDto {
   @IsStringCustom()
   @IsNotEmptyCustom()
   @IsOptional()
+  deviceId: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
   avatar: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  note:string;
   @ApiProperty({ type: WeekDto })
   @IsDefinedCustom()
   @IsNotEmptyObjectCustom()

@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { ChildService } from './child.service';
 import {
   Body,
@@ -10,44 +10,51 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
   forwardRef,
 } from '@nestjs/common';
 import { CreateChildDto } from './dto/create-child.dto';
-import { UserData } from 'src/auth/decorators/get-user-from-jwt.decorator';
-import { IJwtData } from 'src/shared/interfaces/jwt-data.interface';
 import { ParentService } from 'src/parent/parent.service';
-import { AuthGuard } from 'src/auth/guards/auth.guards';
 import { UpdateChildDto } from './dto/update-child.dto';
+import { CookieAuthenticationGuard } from 'src/auth/guards/coockie.guard';
+import RequestWithSession from 'src/auth/interfaces/req-with-session.interface';
 @ApiTags('child')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @Controller('child')
-@UseGuards(AuthGuard)
+@UseGuards(CookieAuthenticationGuard)
 export class ChildController {
   constructor(
     private readonly childService: ChildService,
     @Inject(forwardRef(() => ParentService))
-    private  parentService: ParentService,
+    private parentService: ParentService,
   ) {}
 
   @Post()
   async addChild(
     @Body() createChildDto: CreateChildDto,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    const parent = await this.parentService.findFullInfoByEmail(jwtData.email);
+    const parent = await this.parentService.findFullInfoByEmail(
+      request.user.email,
+    );
     return await this.childService.addChild(createChildDto, parent.id);
   }
 
   @Get()
-  async getAllChilds(@UserData() jwtData: IJwtData) {
-    const childs = await this.childService.getChilds(jwtData.id);
+  async getAllChilds(@Req() request: RequestWithSession) {
+    const childs = await this.childService.getChilds(request.user.id);
     return childs;
   }
 
   @Get(':id')
-  async getChild(@Param('id') childId: string, @UserData() jwtData: IJwtData) {
-    const parent = await this.parentService.findFullInfoByEmail(jwtData.email);
+  async getChild(
+    @Param('id') childId: string,
+    @Req() request: RequestWithSession,
+  ) {
+    const parent = await this.parentService.findFullInfoByEmail(
+      request.user.email,
+    );
     const child = await this.childService.findChildById(childId);
     if (parent.id !== child.parentId) throw new ForbiddenException();
     return child;
@@ -56,10 +63,12 @@ export class ChildController {
   @Patch(':id')
   async updateChild(
     @Param('id') childId: string,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
     @Body() updateChildDto: UpdateChildDto,
   ) {
-    const parent = await this.parentService.findFullInfoByEmail(jwtData.email);
+    const parent = await this.parentService.findFullInfoByEmail(
+      request.user.email,
+    );
     return await this.childService.updateChild(
       updateChildDto,
       childId,
@@ -70,9 +79,11 @@ export class ChildController {
   @Delete(':id')
   async deleteChild(
     @Param('id') childId: string,
-    @UserData() jwtdata: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    const parent = await this.parentService.findFullInfoByEmail(jwtdata.email);
+    const parent = await this.parentService.findFullInfoByEmail(
+      request.user.email,
+    );
     return await this.childService.deleteChild(childId, parent.id);
   }
 }

@@ -26,6 +26,9 @@ export class Parent {
   @prop({ _id: false, required: false, type: () => [Location] })
   location?: Location;
 
+  @prop({ default: false })
+  isGoogle: boolean;
+
   @prop({ required: false, select: false })
   activationCode?: string;
 
@@ -56,6 +59,12 @@ export class Parent {
   // TODO fix
   @prop({ required: false })
   week: unknown;
+
+  @prop({requried:false})
+  deviceId:string
+
+  @prop({requried:false})
+  note:string;
 }
 
 export class IGroupJoinRequest {

@@ -8,10 +8,11 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/guards/auth.guards';
+import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { ParentService } from 'src/parent/parent.service';
 import { UpdateParentDto } from './dto/update-parent.dto';
 import { UserData } from 'src/auth/decorators/get-user-from-jwt.decorator';
@@ -19,34 +20,36 @@ import { IJwtData } from '../shared/interfaces/jwt-data.interface';
 import { UpdateGeoDto } from 'src/shared/dto/update-geo.dto';
 import { DeleteParentDto } from './dto/delete-parent.dto';
 import { FindParentDto } from './dto/find-parent.dto';
+import RequestWithSession from '../auth/interfaces/req-with-session.interface';
+import { CookieAuthenticationGuard } from '../auth/guards/coockie.guard';
 
 @ApiTags('parent')
 @Controller('parent')
 export class ParentController {
   constructor(private readonly parentService: ParentService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Patch()
   @HttpCode(200)
   async updateParent(
     @Body() patchParentDto: UpdateParentDto,
-    @UserData() data: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
-    return await this.parentService.updateParent(patchParentDto, data.email);
+    return await this.parentService.updateParent(patchParentDto, request.user.email);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Patch('geo')
   @HttpCode(200)
   async updateParentGeo(
     @Body() updateGeoDto: UpdateGeoDto,
-    @UserData() jwtData: IJwtData,
+    @Req() request: RequestWithSession,
   ) {
     return await this.parentService.updateGeoLocation(
       updateGeoDto,
-      jwtData.email,
+      request.user.email,
     );
   }
 
@@ -58,17 +61,17 @@ export class ParentController {
     return await this.parentService.deleteParent(deleteParentDto.email);
   }
 
-  @ApiBearerAuth()
+  @ApiCookieAuth()
   @ApiOperation({ summary: 'Видалення залогіненого аккаунта' })
-  @UseGuards(AuthGuard)
+  @UseGuards(CookieAuthenticationGuard)
   @Delete()
-  async deleteMyAccount(@UserData() jwtData: IJwtData) {
-    return await this.parentService.deleteAccount(jwtData.email);
+  async deleteMyAccount(@Req() request: RequestWithSession) {
+    return await this.parentService.deleteAccount(request.user.email);
   }
 
   @ApiOperation({ summary: 'Пошук за emailom' })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Post('find')
   async findUser(@Body() findParentDto: FindParentDto) {
     const user = await this.parentService.findByEmail(findParentDto.email);
@@ -76,17 +79,17 @@ export class ParentController {
     return { user, childs };
   }
   @ApiOperation({ summary: 'Пошук за id' })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Get('id/:parentId')
   async findUserById(@Param('parentId') parentId: string) {
     const user = await this.parentService.findById(parentId);
     return { user };
   }
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @ApiCookieAuth()
+  @UseGuards(CookieAuthenticationGuard)
   @Delete('/photo')
-  async deletePhoto(@UserData() jwtData: IJwtData) {
-    await this.parentService.deletePhoto(jwtData.id);
+  async deletePhoto(@Req() request: RequestWithSession) {
+    await this.parentService.deletePhoto(request.user.id);
   }
 }

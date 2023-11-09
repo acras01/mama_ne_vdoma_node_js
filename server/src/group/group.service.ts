@@ -32,6 +32,8 @@ import {
   notaParentOfThisChild,
   requestNotFound,
 } from './utils/errors';
+import { FirebaseService } from 'src/firebase/firebase.service';
+import { FirebaseMessageEnum } from '../firebase/interfaces/messages.interface';
 
 @Injectable()
 export class GroupService {
@@ -45,6 +47,7 @@ export class GroupService {
     private readonly childService: ChildService,
     @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   async createGroup(
@@ -86,7 +89,13 @@ export class GroupService {
     if (!isAdminInGroup) throw new NotFoundException();
     group.adminId = newAdminId;
     const newAdmin = await this.parentService.findById(newAdminId);
-    this.mailService.adminTransferNotification(newAdmin.email, group.id);
+    await this.mailService.adminTransferNotification(newAdmin.email, group.id);
+    if (newAdmin.deviceId)
+      this.firebaseService.sendPushNotific(
+        newAdmin.deviceId,
+        FirebaseMessageEnum.USER_GROUP_TRANSFERED_ADMIN,
+        { groupId: groupId },
+      );
     await group.save();
   }
 
@@ -121,8 +130,13 @@ export class GroupService {
       parentId,
       childId,
     );
-
-    await Promise.all([parent.save(), group.save()]);
+    if (groupAdmin.deviceId)
+      this.firebaseService.sendPushNotific(
+        groupAdmin.deviceId,
+        FirebaseMessageEnum.USER_GROUP_REQUEST,
+        { groupId: groupId, userId: parentId },
+      );
+  await Promise.all([parent.save(), group.save()]);
   }
 
   async cancelGroupMembershipRequest(
@@ -178,9 +192,20 @@ export class GroupService {
     if (!ask) throw new BadRequestException(requestNotFound);
     if (isAccept) {
       group.members.push({ childId, parentId });
-      await this.mailService.sendGroupInvitationAccept(parent.email, group.id);
-    } else {
-      await this.mailService.sendGroupInvitationReject(parent.email, group.id);
+      this.mailService.sendGroupInvitationAccept(parent.email, group.id);
+      this.firebaseService.sendPushNotific(
+        parent.deviceId,
+        FirebaseMessageEnum.USER_GROUP_ACCEPTED,
+        { groupId },
+      );
+    }
+    {
+      this.mailService.sendGroupInvitationReject(parent.email, group.id);
+      this.firebaseService.sendPushNotific(
+        parent.deviceId,
+        FirebaseMessageEnum.USER_GROUP_REJECTED,
+        { groupId },
+      );
     }
     const parentRequest = parent.groupJoinRequests.find(
       (el) => el.childId === childId && el.groupId === groupId,
@@ -240,6 +265,11 @@ export class GroupService {
     await group.save();
     if (notification) {
       const parent = await this.parentService.findById(memberPair.parentId);
+      this.firebaseService.sendPushNotific(
+        parent.deviceId,
+        FirebaseMessageEnum.USER_GROUP_KICKED,
+        { groupId },
+      );
       await this.mailService.kickedFromGroupNotification(
         parent.email,
         group.id,

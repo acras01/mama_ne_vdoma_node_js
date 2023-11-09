@@ -38,7 +38,7 @@ export class AuthService {
     });
     return jwt;
   }
-
+  
   async register(registerDto: RegisterDto) {
     try {
       const user = await this.parentService.findFullInfoByEmail(
@@ -49,6 +49,14 @@ export class AuthService {
     if (!(await this.parentService.isEmailAvaliable(registerDto.email)))
       throw new BadRequestException(emailAlreadyTaken);
     return await this.parentService.createParent(registerDto);
+  }
+
+  async getAuthenticatedUser(email: string, password: string) {
+    const parent = await this.parentService.findFullInfoByEmail(email);
+    const isPasswordCorrect = await bcrypt.compare(password, parent.password);
+    if (!isPasswordCorrect)
+      throw new UnauthorizedException('Wrong credentials');
+    return parent;
   }
 
   async confirmEmail(confirmEmailDto: ConfirmEmailDto) {
@@ -64,6 +72,7 @@ export class AuthService {
   }
 
   async getMe(email: string) {
+    // TODO add lastLoginDate to user and update in this route
     return await this.parentService.findByEmail(email);
   }
 
@@ -91,5 +100,16 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     await this.parentService.resetPassword(resetPasswordDto);
     return true;
+  }
+
+  async handleGoogleCode(code: string) {
+    const data = this.jwtService.decode(code, {});
+    if (data === null) throw new BadRequestException('Something wrong');
+    const email = data['email'];
+    if (!(await this.parentService.isEmailAvaliable(email))) {
+      return this.parentService.findFullInfoByEmail(email);
+    } else {
+      return await this.parentService.registerWithGoogle(email);
+    }
   }
 }
