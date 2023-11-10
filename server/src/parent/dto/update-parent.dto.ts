@@ -39,15 +39,15 @@ export class UpdateParentDto {
   @IsOptional()
   deviceId: string;
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
   avatar: string;
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
-  note:string;
+  note: string;
   @ApiProperty({ type: WeekDto })
   @IsDefinedCustom()
   @IsNotEmptyObjectCustom()
