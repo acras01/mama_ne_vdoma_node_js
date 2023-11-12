@@ -11,14 +11,17 @@ import { IEnv } from './configs/env.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', 1);
-  app.setGlobalPrefix('back/api');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true,stopAtFirstError: true }));
   const configService = app.get(ConfigService<IEnv>);
+  const globalPrefix = configService.get('GLOBAL_PREFIX');
+  app.set('trust proxy', 1);
+  app.setGlobalPrefix(globalPrefix + '/api');
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, stopAtFirstError: true }),
+  );
   app.enableCors();
   app.use(
     session({
-      secret: 'SECRET SESSION KEY',
+      secret: configService.get('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
       cookie: { httpOnly: true, maxAge: 2_629_800_000 },
@@ -34,7 +37,7 @@ async function bootstrap() {
     .addCookieAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('back/swagger', app, document);
+  SwaggerModule.setup(globalPrefix + '/swagger', app, document);
   app.enableCors();
   await app.listen(3000);
 }
