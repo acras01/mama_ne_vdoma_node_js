@@ -88,14 +88,11 @@ export class GroupService {
     if (!isAdminInGroup) throw new NotFoundException();
     group.adminId = newAdminId;
     const newAdmin = await this.parentService.findById(newAdminId);
-    await this.notificationService.sendAdminTransferEmailNotification(
-      newAdmin.email,
-      group.id,
+    await this.notificationService.sendTransferNotification(
+      newAdmin,
+      group,
+      groupId,
     );
-    if (newAdmin.deviceId)
-      this.notificationService.sendTransferPushNotification(newAdmin.deviceId, {
-        groupId,
-      });
     await group.save();
   }
 
@@ -125,16 +122,11 @@ export class GroupService {
     const groupAdmin = await this.parentService.findById(group.adminId);
     group.askingJoin.push({ childId, parentId });
     parent.groupJoinRequests.push({ groupId, childId });
-    this.notificationService.sendGroupJoiningRequestEmailNotification(
-      groupAdmin.email,
-      parentId,
+    this.notificationService.groupJoiningRequestNotification(
+      groupAdmin,
       childId,
+      { groupId: groupId, userId: parentId },
     );
-    if (groupAdmin.deviceId)
-      this.notificationService.sendGroupRequestPushNotification(
-        groupAdmin.deviceId,
-        { groupId: groupId, userId: parentId },
-      );
     await Promise.all([parent.save(), group.save()]);
   }
 
@@ -191,25 +183,13 @@ export class GroupService {
     if (!ask) throw new BadRequestException(requestNotFound);
     if (isAccept) {
       group.members.push({ childId, parentId });
-      this.notificationService.sendGroupInvitationAcceptEmailNotification(
-        parent.email,
-        group.id,
-      );
-      this.notificationService.sendGroupInvitationAcceptPushNotification(
-        parent.deviceId,
-        { groupId },
+      this.notificationService.groupInvitationAcceptNotification(
+        parent,
+        group,
+        groupId,
       );
     }
-    {
-      this.notificationService.sendGroupInvitationAcceptEmailNotification(
-        parent.email,
-        group.id,
-      );
-      this.notificationService.sendGroupInvitationRejectPushNotification(
-        parent.deviceId,
-        { groupId },
-      );
-    }
+
     const parentRequest = parent.groupJoinRequests.find(
       (el) => el.childId === childId && el.groupId === groupId,
     );
@@ -268,13 +248,7 @@ export class GroupService {
     await group.save();
     if (notification) {
       const parent = await this.parentService.findById(memberPair.parentId);
-      this.notificationService.sendUserKickPushNotification(parent.deviceId, {
-        groupId,
-      });
-      this.notificationService.sendKickedFromGroupEmailNotification(
-        parent.email,
-        group.id,
-      );
+      this.notificationService.userKickNotification(parent, { groupId }, group);
     }
   }
 

@@ -15,11 +15,19 @@ export class NotificationsService {
     this.mailService.groupCreatedNotification(email, groupId);
   }
 
-  sendAdminTransferEmailNotification(email: string, groupId: string) {
+  private sendAdminTransferEmailNotification(email: string, groupId: string) {
     this.mailService.adminTransferNotification(email, groupId);
   }
 
-  async sendTransferPushNotification(
+  async sendTransferNotification(newAdmin, group, groupId) {
+    await this.sendAdminTransferEmailNotification(newAdmin.email, group.id);
+    if (newAdmin.deviceId)
+      this.sendTransferPushNotification(newAdmin.deviceId, {
+        groupId,
+      });
+  }
+
+  private async sendTransferPushNotification(
     deviceId: string,
     payload: { groupId: string },
   ) {
@@ -30,7 +38,24 @@ export class NotificationsService {
     );
   }
 
-  sendGroupJoiningRequestEmailNotification(
+  async groupJoiningRequestNotification(
+    groupAdmin,
+    childId,
+    { groupId: groupId, userId: parentId },
+  ) {
+    this.sendGroupJoiningRequestEmailNotification(
+      groupAdmin.email,
+      parentId,
+      childId,
+    );
+    if (groupAdmin.deviceId)
+      this.sendGroupRequestPushNotification(groupAdmin.deviceId, {
+        groupId: groupId,
+        userId: parentId,
+      });
+  }
+
+  private sendGroupJoiningRequestEmailNotification(
     groupAdminEmail: string,
     parentId: string,
     childId: string,
@@ -42,7 +67,7 @@ export class NotificationsService {
     );
   }
 
-  async sendGroupRequestPushNotification(
+  private async sendGroupRequestPushNotification(
     deviceId: string,
     payload: { groupId: string; userId: string },
   ) {
@@ -53,11 +78,21 @@ export class NotificationsService {
     );
   }
 
-  sendGroupInvitationAcceptEmailNotification(email: string, groupId: string) {
+  async groupInvitationAcceptNotification(parent, group, groupId) {
+    this.sendGroupInvitationAcceptEmailNotification(parent.email, group.id);
+    this.sendGroupInvitationAcceptPushNotification(parent.deviceId, {
+      groupId,
+    });
+  }
+
+  private sendGroupInvitationAcceptEmailNotification(
+    email: string,
+    groupId: string,
+  ) {
     this.mailService.sendGroupInvitationAccept(email, groupId);
   }
 
-  async sendGroupInvitationAcceptPushNotification(
+  private async sendGroupInvitationAcceptPushNotification(
     deviceId: string,
     payload: { groupId: string },
   ) {
@@ -68,26 +103,18 @@ export class NotificationsService {
     );
   }
 
-  sendGroupInvitationRejectEmailNotification(email: string, groupId: string) {
-    this.mailService.sendGroupInvitationReject(email, groupId);
+  async userKickNotification(parent, groupId, group) {
+    this.sendUserKickPushNotification(parent.deviceId, {
+      groupId,
+    });
+    this.sendKickedFromGroupEmailNotification(parent.email, group.id);
   }
 
-  async sendGroupInvitationRejectPushNotification(
-    deviceId: string,
-    payload: { groupId: string },
-  ) {
-    await this.firebaseService.sendPushNotific(
-      deviceId,
-      FirebaseMessageEnum.USER_GROUP_REJECTED,
-      payload,
-    );
-  }
-
-  sendKickedFromGroupEmailNotification(email: string, groupId: string) {
+  private sendKickedFromGroupEmailNotification(email: string, groupId: string) {
     this.mailService.kickedFromGroupNotification(email, groupId);
   }
 
-  async sendUserKickPushNotification(
+  private async sendUserKickPushNotification(
     deviceId: string,
     payload: { groupId: string },
   ) {
