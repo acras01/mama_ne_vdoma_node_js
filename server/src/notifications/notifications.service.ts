@@ -15,16 +15,16 @@ export class NotificationsService {
     this.mailService.groupCreatedNotification(email, groupId);
   }
 
-  private sendAdminTransferEmailNotification(email: string, groupId: string) {
-    this.mailService.adminTransferNotification(email, groupId);
-  }
-
   async sendTransferNotification(newAdmin, group, groupId) {
     await this.sendAdminTransferEmailNotification(newAdmin.email, group.id);
     if (newAdmin.deviceId)
       this.sendTransferPushNotification(newAdmin.deviceId, {
         groupId,
       });
+  }
+
+  private sendAdminTransferEmailNotification(email: string, groupId: string) {
+    this.mailService.adminTransferNotification(email, groupId);
   }
 
   private async sendTransferPushNotification(
