@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { IsBooleanCustom } from 'src/decorators/isBooleanCustom';
-import { IsDefinedCustom } from 'src/decorators/isDefinedCustom';
-import { IsNotEmptyObjectCustom } from 'src/decorators/isNotEmptyObjectCustom';
-import { IsObjectCustom } from 'src/decorators/isObjectCustom';
+import { IsBooleanCustom } from 'src/shared/decorators/isBooleanCustom';
+import { IsDefinedCustom } from 'src/shared/decorators/isDefinedCustom';
+import { IsNotEmptyObjectCustom } from 'src/shared/decorators/isNotEmptyObjectCustom';
+import { IsObjectCustom } from 'src/shared/decorators/isObjectCustom';
 
 export class DayDto {
   @ApiProperty()
