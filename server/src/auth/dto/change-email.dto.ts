@@ -1,10 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmailCustom } from 'src/decorators/isEmailCustom';
-import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
 
 export class CodeDto {
   @ApiProperty()
-  @IsEmailCustom()
+  @IsNotEmptyCustom()
   @IsStringCustom()
-  code: string;
+  code: string
 }

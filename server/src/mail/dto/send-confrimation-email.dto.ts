@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmailCustom } from 'src/decorators/isEmailCustom';
-import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { IsEmailCustom } from '../../shared/decorators/isEmailCustom';
+import { IsStringCustom } from '../../shared/decorators/isStringCustom';
 
 export class SendConfirmationEmail {
   @ApiProperty()

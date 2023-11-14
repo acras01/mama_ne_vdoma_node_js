@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
-import { IsNumberCustom } from 'src/decorators/isNumberCustom';
+import { IsNotEmptyCustom } from 'src/shared/decorators/isNotEmptyCustom';
+import { IsNumberCustom } from 'src/shared/decorators/isNumberCustom';
 
 export class UpdateGeoDto {
   @ApiProperty()

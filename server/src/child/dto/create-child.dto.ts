@@ -1,18 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsBooleanCustom } from 'src/decorators/isBooleanCustom';
-import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
-import { IsNumberCustom } from 'src/decorators/isNumberCustom';
-import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBooleanCustom } from '../../shared/decorators/isBooleanCustom'
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom'
+import { IsNumberCustom } from '../../shared/decorators/isNumberCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
 
 export class CreateChildDto {
   @ApiProperty()
   @IsStringCustom()
   @IsNotEmptyCustom()
-  name: string;
+  name: string
   @ApiProperty()
   @IsNumberCustom(0, 18)
-  age: number;
+  age: number
   @ApiProperty()
   @IsBooleanCustom()
-  isMale: boolean;
+  isMale: boolean
 }
