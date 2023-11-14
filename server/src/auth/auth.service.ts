@@ -55,6 +55,7 @@ export class AuthService {
     const parent = await this.parentService.findFullInfoByEmail(email)
     const isPasswordCorrect = await bcrypt.compare(password, parent.password)
     if (!isPasswordCorrect) throw new UnauthorizedException('Wrong credentials')
+    if (!parent.isConfirmed) throw new BadRequestException(notConfrimedAccount)
     return parent
   }
 
