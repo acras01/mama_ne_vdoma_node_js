@@ -9,11 +9,11 @@ export function MatchesCustom(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          const pattern = /^[a-zA-Zа-яА-Яі0-9 -]+$/gm;
+          const pattern = /^[a-zA-Zа-яА-ЯҐґєЄіІїЇ0-9 -]+$/gmi;
           return pattern.test(value);
         },
         defaultMessage() {
-          return 'Має містити лише букви або пробіл';
+          return 'Має містити лише букви, дефіс або пробіл';
         },
       },
     });
