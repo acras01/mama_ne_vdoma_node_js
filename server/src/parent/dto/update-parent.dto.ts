@@ -2,21 +2,21 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { WeekDto } from '../../shared/dto/week.dto';
-import { MatchesCustom } from 'src/decorators/matchesCustom';
 import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
 import { IsStringCustom } from 'src/decorators/isStringCustom';
 import { IsBooleanCustom } from 'src/decorators/isBooleanCustom';
 import { IsDefinedCustom } from 'src/decorators/isDefinedCustom';
 import { IsNotEmptyObjectCustom } from 'src/decorators/isNotEmptyObjectCustom';
 import { IsObjectCustom } from 'src/decorators/isObjectCustom';
-import { LengthCustom } from 'src/decorators/LengthCustom';
+import { isLengthCustom } from 'src/decorators/isLengthCustom';
+import { isMatchesCustom } from 'src/decorators/isMatchesCustom';
 
 export class UpdateParentDto {
   @ApiProperty()
   @IsStringCustom()
-  @MatchesCustom()
+  @isMatchesCustom()
   @IsNotEmptyCustom()
-  @LengthCustom(2, 18)
+  @isLengthCustom(2, 18)
   @IsOptional()
   name: string;
   @ApiProperty()

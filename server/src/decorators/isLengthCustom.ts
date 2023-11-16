@@ -1,6 +1,6 @@
 import { ValidationOptions, ValidateBy } from 'class-validator';
 
-export function LengthCustom(
+export function isLengthCustom(
   minLength,
   maxLength,
   validationOptions?: ValidationOptions,

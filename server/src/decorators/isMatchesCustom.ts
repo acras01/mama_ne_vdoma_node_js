@@ -1,6 +1,6 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 
-export function MatchesCustom(validationOptions?: ValidationOptions) {
+export function isMatchesCustom(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'matchesCustom',
