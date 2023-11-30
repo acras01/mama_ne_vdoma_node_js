@@ -1,3 +1,4 @@
+import { ParentService } from './../parent/parent.service';
 import { FirebaseMessageEnum } from './../firebase/interfaces/messages.interface';
 import { FirebaseService } from './../firebase/firebase.service';
 import { MailService } from './../mail/mail.service';
@@ -9,6 +10,8 @@ export class NotificationsService {
     @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
     private readonly firebaseService: FirebaseService,
+    @Inject(forwardRef(() => ParentService))
+    private readonly parentService: ParentService,
   ) {}
 
   sendGroupCreatedEmailNotification(email: string, groupId: string) {
@@ -21,6 +24,10 @@ export class NotificationsService {
       this.sendTransferPushNotification(newAdmin.deviceId, {
         groupId,
       });
+    await this.createNotification(
+      newAdmin,
+      FirebaseMessageEnum.USER_GROUP_TRANSFERED_ADMIN,
+    );
   }
 
   private sendAdminTransferEmailNotification(email: string, groupId: string) {
@@ -53,6 +60,10 @@ export class NotificationsService {
         groupId: groupId,
         userId: parentId,
       });
+    await this.createNotification(
+      parentId,
+      FirebaseMessageEnum.USER_GROUP_REQUEST,
+    );
   }
 
   private sendGroupJoiningRequestEmailNotification(
@@ -83,6 +94,10 @@ export class NotificationsService {
     this.sendGroupInvitationAcceptPushNotification(parent.deviceId, {
       groupId,
     });
+    await this.createNotification(
+      parent,
+      FirebaseMessageEnum.USER_GROUP_ACCEPTED,
+    );
   }
 
   private sendGroupInvitationAcceptEmailNotification(
@@ -103,11 +118,44 @@ export class NotificationsService {
     );
   }
 
+  async groupInvitationRejectNotification(parent, group, groupId) {
+    this.sendGroupInvitationRejectEmailNotification(parent.email, group.id);
+    this.sendGroupInvitationRejectPushNotification(parent.deviceId, {
+      groupId,
+    });
+    await this.createNotification(
+      parent,
+      FirebaseMessageEnum.USER_GROUP_REJECTED,
+    );
+  }
+
+  private sendGroupInvitationRejectEmailNotification(
+    email: string,
+    groupId: string,
+  ) {
+    this.mailService.sendGroupInvitationReject(email, groupId);
+  }
+
+  private async sendGroupInvitationRejectPushNotification(
+    deviceId: string,
+    payload: { groupId: string },
+  ) {
+    await this.firebaseService.sendPushNotific(
+      deviceId,
+      FirebaseMessageEnum.USER_GROUP_REJECTED,
+      payload,
+    );
+  }
+
   async userKickNotification(parent, groupId, group) {
     this.sendUserKickPushNotification(parent.deviceId, {
       groupId,
     });
     this.sendKickedFromGroupEmailNotification(parent.email, group.id);
+    await this.createNotification(
+      parent,
+      FirebaseMessageEnum.USER_GROUP_KICKED,
+    );
   }
 
   private sendKickedFromGroupEmailNotification(email: string, groupId: string) {
@@ -123,5 +171,13 @@ export class NotificationsService {
       FirebaseMessageEnum.USER_GROUP_KICKED,
       payload,
     );
+  }
+
+  async createNotification(parentId: string, notificationType: string) {
+    this.parentService.addNotification(parentId, notificationType);
+  }
+
+  async deleteNotifications(parentId: string) {
+    this.parentService.removeNotifications(parentId);
   }
 }

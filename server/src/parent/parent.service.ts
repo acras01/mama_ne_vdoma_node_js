@@ -263,4 +263,21 @@ export class ParentService {
     }
     return null;
   }
+
+  async addNotification(parentId: string, notificationType: string) {
+    const parent = await this.findById(parentId);
+    const currentTime = Math.floor(new Date().getTime() / 1000);
+    const notification = {
+      notificationType: notificationType,
+      creatingTime: currentTime,
+    };
+    parent.notifications.push(notification);
+    parent.save();
+  }
+
+  async removeNotifications(parentId: string) {
+    const parent = await this.findById(parentId);
+    parent.notifications = [];
+    parent.save();
+  }
 }

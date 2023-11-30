@@ -188,6 +188,12 @@ export class GroupService {
         group,
         groupId,
       );
+    } else {
+      await this.notificationService.groupInvitationRejectNotification(
+        parent,
+        group,
+        groupId,
+      );
     }
 
     const parentRequest = parent.groupJoinRequests.find(

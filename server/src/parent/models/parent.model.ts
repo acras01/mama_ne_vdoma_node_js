@@ -60,11 +60,14 @@ export class Parent {
   @prop({ required: false })
   week: unknown;
 
-  @prop({requried:false})
-  deviceId:string
+  @prop({ requried: false })
+  deviceId: string;
 
-  @prop({requried:false})
-  note:string;
+  @prop({ requried: false })
+  note: string;
+
+  @prop({ required: false })
+  notifications: { notificationType: string; creatingTime: number }[];
 }
 
 export class IGroupJoinRequest {
