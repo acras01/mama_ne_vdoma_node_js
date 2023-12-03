@@ -218,17 +218,6 @@ export class ParentService {
     return await this.findByEmail(email);
   }
 
-  async deleteParent(email: string) {
-    // todo add security
-    const parent = await this.parentModel.findOne({ email });
-    if (parent === null) {
-      return false;
-    } else {
-      await this.deleteAccount(parent.email);
-      return true;
-    }
-  }
-
   async deleteAccount(email: string) {
     const parent = await this.findByEmail(email);
     if (parent.avatar) await this.backblazeService.deleteFile(parent.avatar);
