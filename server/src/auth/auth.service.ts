@@ -73,10 +73,10 @@ export class AuthService {
   }
 
   async getMe(email: string) {
-    // TODO add lastLoginDate to user and update in this route
     const parent = await this.parentService.findByEmail(email);
     parent.lastLoginDate = new Date();
     parent.save();
+    return parent
   }
 
   async sendResetPasswordCode(
