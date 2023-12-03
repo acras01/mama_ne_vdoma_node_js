@@ -26,6 +26,7 @@ import {
   notFound,
   wrongCode,
 } from './utils/errors';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 export class ParentService {
   constructor(
@@ -251,5 +252,21 @@ export class ParentService {
       return true;
     }
     return null;
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  private async deleteInactiveAccounts() {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 6);
+    const inactiveAccounts = await this.parentModel.find({
+      lastLoginDate: { $lte: date },
+    });
+    if (inactiveAccounts.length) {
+      console.log('deleted accounts')
+      console.log(inactiveAccounts);
+      await Promise.all(
+        inactiveAccounts.map((acc) => this.deleteAccount(acc.email)),
+      );
+    }
   }
 }
