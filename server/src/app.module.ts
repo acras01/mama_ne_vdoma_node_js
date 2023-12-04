@@ -11,12 +11,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from './configs/jwt.config';
 import { MailModule } from './mail/mail.module';
 import { ChildModule } from './child/child.module';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorMessageToArrayFilter } from './shared/filters/error-message-to-array.filter';
 import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filter';
 import { GroupModule } from './group/group.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { FirebaseModule } from './firebase/firebase.module';
+import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
 
 @Module({
   imports: [
@@ -44,6 +45,10 @@ import { FirebaseModule } from './firebase/firebase.module';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
+    },
     {
       provide: APP_FILTER,
       useClass: ErrorMessageToArrayFilter,
