@@ -26,6 +26,7 @@ import {
   notFound,
   wrongCode,
 } from './utils/errors';
+import { FirebaseMessageEnumType } from 'src/firebase/interfaces/messages.interface';
 
 export class ParentService {
   constructor(
@@ -264,7 +265,10 @@ export class ParentService {
     return null;
   }
 
-  async addNotification(parentId: string, notificationType: string) {
+  async addNotification(
+    parentId: string,
+    notificationType: FirebaseMessageEnumType,
+  ) {
     const parent = await this.findById(parentId);
     const currentTime = Math.floor(new Date().getTime() / 1000);
     const notification = {

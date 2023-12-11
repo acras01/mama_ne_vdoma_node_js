@@ -1,5 +1,8 @@
 import { ParentService } from './../parent/parent.service';
-import { FirebaseMessageEnum } from './../firebase/interfaces/messages.interface';
+import {
+  FirebaseMessageEnum,
+  FirebaseMessageEnumType,
+} from './../firebase/interfaces/messages.interface';
 import { FirebaseService } from './../firebase/firebase.service';
 import { MailService } from './../mail/mail.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
@@ -14,166 +17,168 @@ export class NotificationsService {
     private readonly parentService: ParentService,
   ) {}
 
-  sendGroupCreatedEmailNotification(email: string, groupId: string) {
-    this.mailService.groupCreatedNotification(email, groupId);
+  sendGroupCreatedEmailNotification(param) {
+    this.mailService.groupCreatedNotification(param.email, param.groupId);
   }
 
-  async sendTransferNotification(newAdmin, group, groupId) {
-    await this.sendAdminTransferEmailNotification(newAdmin.email, group.id);
-    if (newAdmin.deviceId)
-      this.sendTransferPushNotification(newAdmin.deviceId, {
-        groupId,
+  async sendTransferNotification(param) {
+    await this.sendAdminTransferEmailNotification({
+      email: param.newAdmin.email,
+      groupId: param.group.id,
+    });
+    if (param.newAdmin.deviceId)
+      this.sendTransferPushNotification({
+        deviceId: param.newAdmin.deviceId,
+        payload: param.groupId,
       });
     await this.createNotification(
-      newAdmin,
+      param.newAdmin,
       FirebaseMessageEnum.USER_GROUP_TRANSFERED_ADMIN,
     );
   }
 
-  private sendAdminTransferEmailNotification(email: string, groupId: string) {
-    this.mailService.adminTransferNotification(email, groupId);
+  private sendAdminTransferEmailNotification(payloadParams) {
+    this.mailService.adminTransferNotification(
+      payloadParams.email,
+      payloadParams.groupId,
+    );
   }
 
-  private async sendTransferPushNotification(
-    deviceId: string,
-    payload: { groupId: string },
-  ) {
+  private async sendTransferPushNotification(payloadParams) {
     await this.firebaseService.sendPushNotific(
-      deviceId,
+      payloadParams.deviceId,
       FirebaseMessageEnum.USER_GROUP_TRANSFERED_ADMIN,
-      payload,
+      payloadParams.payload,
     );
   }
 
-  async groupJoiningRequestNotification(
-    groupAdmin,
-    childId,
-    { groupId: groupId, userId: parentId },
-  ) {
-    this.sendGroupJoiningRequestEmailNotification(
-      groupAdmin.email,
-      parentId,
-      childId,
-    );
-    if (groupAdmin.deviceId)
-      this.sendGroupRequestPushNotification(groupAdmin.deviceId, {
-        groupId: groupId,
-        userId: parentId,
+  async groupJoiningRequestNotification(param) {
+    this.sendGroupJoiningRequestEmailNotification({
+      groupAdminEmail: param.groupAdmin.email,
+      parentId: param.payload.userId,
+      childId: param.childId,
+    });
+    if (param.groupAdmin.deviceId)
+      this.sendGroupRequestPushNotification({
+        deviceId: param.groupAdmin.deviceId,
+        payload: { groupId: param.payload.groupId, userId: param.parentId },
       });
     await this.createNotification(
-      parentId,
+      param.payload.userId,
       FirebaseMessageEnum.USER_GROUP_REQUEST,
     );
   }
 
-  private sendGroupJoiningRequestEmailNotification(
-    groupAdminEmail: string,
-    parentId: string,
-    childId: string,
-  ) {
+  private sendGroupJoiningRequestEmailNotification(payloadParams) {
     this.mailService.sendGroupJoiningRequest(
-      groupAdminEmail,
-      parentId,
-      childId,
+      payloadParams.groupAdminEmail,
+      payloadParams.parentId,
+      payloadParams.childId,
     );
   }
 
-  private async sendGroupRequestPushNotification(
-    deviceId: string,
-    payload: { groupId: string; userId: string },
-  ) {
+  private async sendGroupRequestPushNotification(payloadParams) {
     await this.firebaseService.sendPushNotific(
-      deviceId,
+      payloadParams.deviceId,
       FirebaseMessageEnum.USER_GROUP_REQUEST,
-      payload,
+      payloadParams.payload,
     );
   }
 
-  async groupInvitationAcceptNotification(parent, group, groupId) {
-    this.sendGroupInvitationAcceptEmailNotification(parent.email, group.id);
-    this.sendGroupInvitationAcceptPushNotification(parent.deviceId, {
-      groupId,
+  async groupInvitationAcceptNotification(param) {
+    this.sendGroupInvitationAcceptEmailNotification({
+      email: param.parent.email,
+      groupId: param.group.id,
+    });
+    this.sendGroupInvitationAcceptPushNotification({
+      deviceId: param.parent.deviceId,
+      payload: param.groupId,
     });
     await this.createNotification(
-      parent,
+      param.parent,
       FirebaseMessageEnum.USER_GROUP_ACCEPTED,
     );
   }
 
-  private sendGroupInvitationAcceptEmailNotification(
-    email: string,
-    groupId: string,
-  ) {
-    this.mailService.sendGroupInvitationAccept(email, groupId);
+  private sendGroupInvitationAcceptEmailNotification(payloadParams) {
+    this.mailService.sendGroupInvitationAccept(
+      payloadParams.email,
+      payloadParams.groupId,
+    );
   }
 
-  private async sendGroupInvitationAcceptPushNotification(
-    deviceId: string,
-    payload: { groupId: string },
-  ) {
+  private async sendGroupInvitationAcceptPushNotification(payloadParams) {
     await this.firebaseService.sendPushNotific(
-      deviceId,
+      payloadParams.deviceId,
       FirebaseMessageEnum.USER_GROUP_ACCEPTED,
-      payload,
+      payloadParams.payload,
     );
   }
 
-  async groupInvitationRejectNotification(parent, group, groupId) {
-    this.sendGroupInvitationRejectEmailNotification(parent.email, group.id);
-    this.sendGroupInvitationRejectPushNotification(parent.deviceId, {
-      groupId,
+  async groupInvitationRejectNotification(param) {
+    this.sendGroupInvitationRejectEmailNotification({
+      email: param.parent.email,
+      groupId: param.group.id,
+    });
+    this.sendGroupInvitationRejectPushNotification({
+      deviceId: param.parent.deviceId,
+      payload: param.groupId,
     });
     await this.createNotification(
-      parent,
+      param.parent,
       FirebaseMessageEnum.USER_GROUP_REJECTED,
     );
   }
 
-  private sendGroupInvitationRejectEmailNotification(
-    email: string,
-    groupId: string,
-  ) {
-    this.mailService.sendGroupInvitationReject(email, groupId);
+  private sendGroupInvitationRejectEmailNotification(payloadParams) {
+    this.mailService.sendGroupInvitationReject(
+      payloadParams.email,
+      payloadParams.groupId,
+    );
   }
 
-  private async sendGroupInvitationRejectPushNotification(
-    deviceId: string,
-    payload: { groupId: string },
-  ) {
+  private async sendGroupInvitationRejectPushNotification(payloadParams) {
     await this.firebaseService.sendPushNotific(
-      deviceId,
+      payloadParams.deviceId,
       FirebaseMessageEnum.USER_GROUP_REJECTED,
-      payload,
+      payloadParams.payload,
     );
   }
 
-  async userKickNotification(parent, groupId, group) {
-    this.sendUserKickPushNotification(parent.deviceId, {
-      groupId,
+  async userKickNotification(param) {
+    this.sendUserKickPushNotification({
+      deviceId: param.parent.deviceId,
+      payload: param.groupId,
     });
-    this.sendKickedFromGroupEmailNotification(parent.email, group.id);
+    this.sendKickedFromGroupEmailNotification({
+      email: param.parent.email,
+      groupId: param.group.id,
+    });
     await this.createNotification(
-      parent,
+      param.parent,
       FirebaseMessageEnum.USER_GROUP_KICKED,
     );
   }
 
-  private sendKickedFromGroupEmailNotification(email: string, groupId: string) {
-    this.mailService.kickedFromGroupNotification(email, groupId);
+  private sendKickedFromGroupEmailNotification(payloadParams) {
+    this.mailService.kickedFromGroupNotification(
+      payloadParams.email,
+      payloadParams.groupId,
+    );
   }
 
-  private async sendUserKickPushNotification(
-    deviceId: string,
-    payload: { groupId: string },
-  ) {
+  private async sendUserKickPushNotification(payloadParams) {
     await this.firebaseService.sendPushNotific(
-      deviceId,
+      payloadParams.deviceId,
       FirebaseMessageEnum.USER_GROUP_KICKED,
-      payload,
+      payloadParams.payload,
     );
   }
 
-  async createNotification(parentId: string, notificationType: string) {
+  async createNotification(
+    parentId: string,
+    notificationType: FirebaseMessageEnumType,
+  ) {
     this.parentService.addNotification(parentId, notificationType);
   }
 
