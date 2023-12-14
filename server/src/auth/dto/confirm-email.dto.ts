@@ -1,13 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmailCustom } from 'src/decorators/isEmailCustom';
-import { IsStringCustom } from 'src/decorators/isStringCustom';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEmailCustom } from '../../shared/decorators/isEmailCustom'
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
 
 export class ConfirmEmailDto {
   @ApiProperty()
   @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsEmailCustom()
-  email: string;
-  @IsStringCustom()
+  email: string
   @ApiProperty()
-  code: string;
+  @IsNotEmptyCustom()
+  @IsStringCustom()
+  code: string
 }

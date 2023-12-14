@@ -336,6 +336,18 @@ export class GroupService {
         .map((el) => this.deleteGroup(el.id, parentId)),
     );
     const groups = await this.findGroupsByMember(parent.id);
+    const requests = parent.groupJoinRequests.map((el) => el.groupId);
+    const requestsGroups = await Promise.all(
+      requests.map((el) => this.findById(el)),
+    );
+    await Promise.all(
+      requestsGroups.map((el) => {
+        el.askingJoin = el.askingJoin.filter(
+          (asking) => asking.parentId !== parentId,
+        );
+        return el.save();
+      }),
+    );
     const whereAdmins = groups.filter((group) => group.adminId === parentId);
     const changeAdmins = whereAdmins.map((el) => ({
       newAdmin: el.members.find((el) => el.parentId !== parentId).parentId,
@@ -356,7 +368,6 @@ export class GroupService {
         adminId: group.adminId,
       };
     });
-
     await Promise.all(
       updateGroups.map((el) =>
         this.kick(el.groupId, el.childId, el.adminId, false),

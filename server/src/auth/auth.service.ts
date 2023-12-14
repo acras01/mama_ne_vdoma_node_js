@@ -1,3 +1,4 @@
+import { ParentService } from './../parent/parent.service';
 import {
   BadRequestException,
   Injectable,
@@ -5,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
-import { ParentService } from 'src/parent/parent.service';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
@@ -38,7 +38,7 @@ export class AuthService {
     });
     return jwt;
   }
-  
+
   async register(registerDto: RegisterDto) {
     try {
       const user = await this.parentService.findFullInfoByEmail(
@@ -56,6 +56,7 @@ export class AuthService {
     const isPasswordCorrect = await bcrypt.compare(password, parent.password);
     if (!isPasswordCorrect)
       throw new UnauthorizedException('Wrong credentials');
+    if (!parent.isConfirmed) throw new BadRequestException(notConfrimedAccount);
     return parent;
   }
 
@@ -72,8 +73,10 @@ export class AuthService {
   }
 
   async getMe(email: string) {
-    // TODO add lastLoginDate to user and update in this route
-    return await this.parentService.findByEmail(email);
+    const parent = await this.parentService.findByEmail(email);
+    parent.lastLoginDate = new Date();
+    parent.save();
+    return parent
   }
 
   async sendResetPasswordCode(

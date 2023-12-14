@@ -53,14 +53,6 @@ export class ParentController {
     );
   }
 
-  @ApiOperation({
-    summary: 'В тестових цілях видалення будь якого акк по емейлу',
-  })
-  @Delete('/dev')
-  async deleteParent(@Body() deleteParentDto: DeleteParentDto) {
-    return await this.parentService.deleteParent(deleteParentDto.email);
-  }
-
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Видалення залогіненого аккаунта' })
   @UseGuards(CookieAuthenticationGuard)

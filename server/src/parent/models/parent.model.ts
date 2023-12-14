@@ -72,6 +72,9 @@ export class Parent {
     notificationType: FirebaseMessageEnumType;
     creatingTime: number;
   }[];
+
+  @prop({ required: false })
+  lastLoginDate: Date;
 }
 
 export class IGroupJoinRequest {
