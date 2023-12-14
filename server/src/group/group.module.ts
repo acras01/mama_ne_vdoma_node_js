@@ -1,3 +1,4 @@
+import { NotificationsModule } from './../notifications/notifications.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { ChildModule } from '../child/child.module';
 import { ParentModule } from '../parent/parent.module';
@@ -17,6 +18,7 @@ import { FirebaseModule } from 'src/firebase/firebase.module';
     forwardRef(() => BackblazeModule),
     TypegooseModule.forFeature([Group]),
     FirebaseModule,
+    NotificationsModule,
   ],
   controllers: [GroupController],
   providers: [GroupService],

@@ -1,6 +1,7 @@
 import { index, prop } from '@typegoose/typegoose';
 import { ValidateNested } from 'class-validator';
 import { Location } from '../../shared/models/location.model';
+import { FirebaseMessageEnumType } from 'src/firebase/interfaces/messages.interface';
 
 @index({ location: '2dsphere' })
 export class Parent {
@@ -65,6 +66,12 @@ export class Parent {
 
   @prop({ requried: false })
   note: string;
+
+  @prop({ required: false })
+  notifications: {
+    notificationType: FirebaseMessageEnumType;
+    creatingTime: number;
+  }[];
 
   @prop({ required: false })
   lastLoginDate: Date;

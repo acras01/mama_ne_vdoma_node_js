@@ -47,7 +47,7 @@ export class UpdateParentDto {
   @IsStringCustom()
   @IsNotEmptyCustom()
   @IsOptional()
-  note: string
+  note: string;
   @ApiProperty({ type: WeekDto })
   @IsDefinedCustom()
   @IsNotEmptyObjectCustom()

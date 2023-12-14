@@ -17,6 +17,7 @@ import { MongoCastErrorFilter } from './shared/filters/mongo-objectId-cast.filte
 import { GroupModule } from './group/group.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { FirebaseModule } from './firebase/firebase.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
 
 @Module({
@@ -41,6 +42,7 @@ import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
     ChildModule,
     GroupModule,
     FirebaseModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -26,6 +26,7 @@ import {
   notFound,
   wrongCode,
 } from './utils/errors';
+import { FirebaseMessageEnumType } from 'src/firebase/interfaces/messages.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 export class ParentService {
@@ -252,6 +253,26 @@ export class ParentService {
       return true;
     }
     return null;
+  }
+
+  async addNotification(
+    parentId: string,
+    notificationType: FirebaseMessageEnumType,
+  ) {
+    const parent = await this.findById(parentId);
+    const currentTime = Math.floor(new Date().getTime() / 1000);
+    const notification = {
+      notificationType: notificationType,
+      creatingTime: currentTime,
+    };
+    parent.notifications.push(notification);
+    parent.save();
+  }
+
+  async removeNotifications(parentId: string) {
+    const parent = await this.findById(parentId);
+    parent.notifications = [];
+    parent.save();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
