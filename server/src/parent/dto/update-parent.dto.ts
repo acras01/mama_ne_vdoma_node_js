@@ -14,9 +14,9 @@ import { LengthCustom } from '../../shared/decorators/LengthCustom'
 export class UpdateParentDto {
   @ApiProperty()
   @IsStringCustom()
-  @isMatchesCustom()
+  @MatchesCustom()
   @IsNotEmptyCustom()
-  @isLengthCustom(2, 18)
+  @LengthCustom(2, 18)
   @IsOptional()
   name: string
   @ApiProperty()
