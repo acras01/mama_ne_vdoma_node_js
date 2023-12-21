@@ -2,22 +2,25 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
 @Injectable()
-export class RedisRepository implements OnModuleDestroy {
-  constructor(@Inject('RedisClient') private readonly redisClient: Redis) {}
+export class KarmaRepository implements OnModuleDestroy {
+  private basePrefix;
+  constructor(@Inject('RedisClient') private readonly redisClient: Redis) {
+    this.basePrefix = 'user_karma';
+  }
 
   onModuleDestroy(): void {
     this.redisClient.quit();
   }
 
-  async get(prefix: string, key: string): Promise<string | null> {
-    return this.redisClient.get(`${prefix}:${key}`);
+  async get(key: string): Promise<string | null> {
+    return this.redisClient.get(`${this.basePrefix}:${key}`);
   }
 
-  async set(prefix: string, key: string, value: string): Promise<void> {
-    await this.redisClient.set(`${prefix}:${key}`, value);
+  async set(key: string, value: string): Promise<void> {
+    await this.redisClient.set(`${this.basePrefix}:${key}`, value);
   }
 
-  async delete(prefix: string, key: string): Promise<void> {
-    await this.redisClient.del(`${prefix}:${key}`);
+  async delete(key: string): Promise<void> {
+    await this.redisClient.del(`${this.basePrefix}:${key}`);
   }
 }
