@@ -60,8 +60,3 @@ export interface GroupInvitationNotificationParams {
   };
   groupId: string;
 }
-
-interface GroupInvitationAcceptEmailNotificationParams {
-  email: string;
-  groupId: string;
-}
