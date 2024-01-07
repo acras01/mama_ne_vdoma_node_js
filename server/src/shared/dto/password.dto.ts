@@ -1,13 +1,13 @@
-import { isLengthCustom } from 'src/decorators/isLengthCustom';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmptyPasswordCustom } from 'src/decorators/isNotEmptyPasswordCustom';
-import { IsStringCustom } from 'src/decorators/isStringCustom';
-import { IsStrongPasswordCustom } from 'src/decorators/isStrongPasswordCustom';
+import { LengthCustom } from 'src/shared/decorators/LengthCustom';
+import { IsNotEmptyPasswordCustom } from 'src/shared/decorators/isNotEmptyPasswordCustom';
+import { IsStringCustom } from 'src/shared/decorators/isStringCustom';
+import { IsStrongPasswordCustom } from 'src/shared/decorators/isStrongPasswordCustom';
 
 export class PasswordDto {
   @IsStringCustom()
   @ApiProperty()
-  @isLengthCustom(6, 24)
+  @LengthCustom(6, 24)
   @IsStrongPasswordCustom()
   @IsNotEmptyPasswordCustom()
   password: string;

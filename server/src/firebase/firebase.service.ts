@@ -11,11 +11,15 @@ export class FirebaseService {
     message: FirebaseMessageEnumType,
     additionalData?,
   ) {
-    if(!deviceId) return
-    const newMessage: Message = {
-      token: deviceId,
-      data: { type: message, ...additionalData },
-    };
-    return await this.firebaseInstance.messaging().send(newMessage);
+    if (!deviceId) return;
+    try {
+      const newMessage: Message = {
+        token: deviceId,
+        data: { type: message, ...additionalData },
+      };
+      return await this.firebaseInstance.messaging().send(newMessage);
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

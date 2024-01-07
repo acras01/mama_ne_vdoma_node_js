@@ -1,48 +1,48 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { WeekDto } from '../../shared/dto/week.dto';
-import { IsNotEmptyCustom } from 'src/decorators/isNotEmptyCustom';
-import { IsStringCustom } from 'src/decorators/isStringCustom';
-import { IsBooleanCustom } from 'src/decorators/isBooleanCustom';
-import { IsDefinedCustom } from 'src/decorators/isDefinedCustom';
-import { IsNotEmptyObjectCustom } from 'src/decorators/isNotEmptyObjectCustom';
-import { IsObjectCustom } from 'src/decorators/isObjectCustom';
-import { isLengthCustom } from 'src/decorators/isLengthCustom';
-import { isMatchesCustom } from 'src/decorators/isMatchesCustom';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsOptional, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
+import { WeekDto } from '../../shared/dto/week.dto'
+import { MatchesCustom } from '../../shared/decorators/matchesCustom'
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
+import { IsBooleanCustom } from '../../shared/decorators/isBooleanCustom'
+import { IsDefinedCustom } from '../../shared/decorators/isDefinedCustom'
+import { IsNotEmptyObjectCustom } from '../../shared/decorators/isNotEmptyObjectCustom'
+import { IsObjectCustom } from '../../shared/decorators/isObjectCustom'
+import { LengthCustom } from '../../shared/decorators/LengthCustom'
 
 export class UpdateParentDto {
   @ApiProperty()
   @IsStringCustom()
-  @isMatchesCustom()
+  @MatchesCustom()
   @IsNotEmptyCustom()
-  @isLengthCustom(2, 18)
+  @LengthCustom(2, 18)
   @IsOptional()
-  name: string;
+  name: string
   @ApiProperty()
   @IsStringCustom()
   @IsNotEmptyCustom()
   @IsOptional()
-  phone: string;
+  phone: string
   @ApiProperty()
   @IsBooleanCustom()
   @IsOptional()
-  sendingEmails: boolean;
+  sendingEmails: boolean
   @ApiProperty()
   @IsStringCustom()
   @IsNotEmptyCustom()
   @IsOptional()
-  countryCode: string;
+  countryCode: string
   @ApiProperty()
   @IsStringCustom()
   @IsNotEmptyCustom()
   @IsOptional()
-  deviceId: string;
+  deviceId: string
   @ApiProperty()
   @IsStringCustom()
   @IsNotEmptyCustom()
   @IsOptional()
-  avatar: string;
+  avatar: string
   @ApiProperty()
   @IsStringCustom()
   @IsNotEmptyCustom()
@@ -55,5 +55,5 @@ export class UpdateParentDto {
   @ValidateNested()
   @Type(() => WeekDto)
   @IsOptional()
-  week: WeekDto;
+  week: WeekDto
 }

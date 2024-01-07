@@ -1,7 +1,8 @@
 import { NotificationsService } from './notifications.service';
-import { Controller, Param, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Req, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CookieAuthenticationGuard } from 'src/auth/guards/coockie.guard';
+import RequestWithSession from 'src/auth/interfaces/req-with-session.interface';
 
 @ApiTags('notifications')
 @ApiCookieAuth()
@@ -11,8 +12,8 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @ApiOperation({ summary: 'Delete all notifications' })
-  @Patch(':parentId')
-  async deleteAllNotifications(@Param('parentId') parentId: string) {
-    await this.notificationsService.deleteNotifications(parentId);
+  @Delete()
+  async deleteAllNotifications(@Req() request: RequestWithSession) {
+    await this.notificationsService.deleteNotifications(request.user.id);
   }
 }

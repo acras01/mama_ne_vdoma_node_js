@@ -37,11 +37,12 @@ export class NotificationsService {
       email: param.newAdmin.email,
       groupId: param.group.id,
     });
-    if (param.newAdmin.deviceId)
+    if (param.newAdmin.deviceId) {
       this.sendTransferPushNotification({
         deviceId: param.newAdmin.deviceId,
         payload: param.groupId,
       });
+    }
     await this.createNotification(
       param.newAdmin.email,
       FirebaseMessageEnum.USER_GROUP_TRANSFERED_ADMIN,
@@ -76,7 +77,7 @@ export class NotificationsService {
       parentId: param.payload.userId,
       childId: param.childId,
     });
-    if (param.groupAdmin.deviceId)
+    if (param.groupAdmin.deviceId) {
       this.sendGroupRequestPushNotification({
         deviceId: param.groupAdmin.deviceId,
         payload: {
@@ -84,6 +85,7 @@ export class NotificationsService {
           userId: param.payload.parentId,
         },
       });
+    }
     await this.createNotification(
       param.payload.userId,
       FirebaseMessageEnum.USER_GROUP_REQUEST,
