@@ -93,6 +93,7 @@ export class GroupService {
       group,
       groupId,
     });
+
     await group.save();
   }
 
