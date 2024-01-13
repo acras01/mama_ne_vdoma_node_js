@@ -67,8 +67,8 @@ export class GroupService {
     if (parent.location) newGroup.location = parent.location;
     const group = await this.groupModel.create(newGroup);
     this.notificationService.sendGroupCreatedEmailNotification({
-      parent: parent.email,
-      group: group.id,
+      email: parent.email,
+      groupId: group.id,
     });
     return group;
   }
