@@ -44,6 +44,7 @@ export class NotificationsService {
       });
     }
     await this.createNotification(
+      param.groupId,
       param.newAdmin.email,
       FirebaseMessageEnum.USER_GROUP_TRANSFERED_ADMIN,
     );
@@ -87,6 +88,7 @@ export class NotificationsService {
       });
     }
     await this.createNotification(
+      param.payload.groupId,
       param.payload.userId,
       FirebaseMessageEnum.USER_GROUP_REQUEST,
     );
@@ -124,6 +126,7 @@ export class NotificationsService {
       payload: param.groupId,
     });
     await this.createNotification(
+      param.groupId,
       param.parent.email,
       FirebaseMessageEnum.USER_GROUP_ACCEPTED,
     );
@@ -164,6 +167,7 @@ export class NotificationsService {
       payload: param.groupId,
     });
     await this.createNotification(
+      param.groupId,
       param.parent,
       FirebaseMessageEnum.USER_GROUP_REJECTED,
     );
@@ -204,6 +208,7 @@ export class NotificationsService {
       groupId: param.group.id,
     });
     await this.createNotification(
+      param.groupId,
       param.parent,
       FirebaseMessageEnum.USER_GROUP_KICKED,
     );
@@ -231,10 +236,11 @@ export class NotificationsService {
   }
 
   async createNotification(
+    groupId: string,
     parentId: string,
     notificationType: FirebaseMessageEnumType,
   ) {
-    this.parentService.addNotification(parentId, notificationType);
+    this.parentService.addNotification(groupId, parentId, notificationType);
   }
 
   async deleteNotifications(parentId: string) {

@@ -69,6 +69,7 @@ export class Parent {
 
   @prop({ required: false })
   notifications: {
+    groupId: string;
     notificationType: FirebaseMessageEnumType;
     creatingTime: number;
   }[];
