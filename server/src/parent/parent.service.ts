@@ -256,12 +256,14 @@ export class ParentService {
   }
 
   async addNotification(
+    groupId: string,
     parentId: string,
     notificationType: FirebaseMessageEnumType,
   ) {
     const parent = await this.findById(parentId);
     const currentTime = Math.floor(new Date().getTime() / 1000);
     const notification = {
+      groupId: groupId,
       notificationType: notificationType,
       creatingTime: currentTime,
     };
