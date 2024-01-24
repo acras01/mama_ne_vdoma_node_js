@@ -76,6 +76,9 @@ export class Parent {
 
   @prop({ required: false })
   lastLoginDate: Date;
+
+  @prop({ required: false, default: 0 })
+  karma: number;
 }
 
 export class IGroupJoinRequest {

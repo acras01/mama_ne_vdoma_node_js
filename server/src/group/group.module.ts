@@ -9,6 +9,7 @@ import { GroupService } from './group.service';
 import { GroupController } from './group.controller';
 import { BackblazeModule } from 'src/backblaze/backblaze.module';
 import { FirebaseModule } from 'src/firebase/firebase.module';
+import { KarmaModule } from '../karma/karma.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FirebaseModule } from 'src/firebase/firebase.module';
     TypegooseModule.forFeature([Group]),
     FirebaseModule,
     NotificationsModule,
+    forwardRef(() => KarmaModule),
   ],
   controllers: [GroupController],
   providers: [GroupService],

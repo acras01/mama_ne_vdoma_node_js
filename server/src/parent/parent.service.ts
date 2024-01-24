@@ -28,6 +28,7 @@ import {
 } from './utils/errors';
 import { FirebaseMessageEnumType } from 'src/firebase/interfaces/messages.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { KarmaService } from '../karma/karma.service';
 
 export class ParentService {
   constructor(
@@ -40,17 +41,22 @@ export class ParentService {
     @Inject(forwardRef(() => GroupService))
     private groupService: GroupService,
     private readonly backblazeService: BackblazeService,
+    private readonly karmaService: KarmaService,
   ) {}
 
   async findByEmail(email: string) {
     const findedDoc = await this.parentModel.findOne({ email });
     if (findedDoc === null) throw new NotFoundException(emailNotFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
   async findByNickName(nick: string) {
     const findedDoc = await this.parentModel.findOne({ name: nick });
     if (findedDoc === null) throw new NotFoundException(accountNotFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
@@ -62,6 +68,8 @@ export class ParentService {
   async findById(id: string) {
     const findedDoc = await this.parentModel.findById(id);
     if (findedDoc === null) throw new NotFoundException(notFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
@@ -74,6 +82,14 @@ export class ParentService {
         throw new NotFoundException(`Parent ID ${id} not found`);
       }
     }
+
+    const rates = await Promise.all(
+      parents.map((parent) => this.karmaService.getUserKarma(parent.id)),
+    );
+    
+    parents.forEach((v, i) => {
+      parents[i].karma = rates[i];
+    });
     return parents;
   }
 
@@ -90,6 +106,8 @@ export class ParentService {
         'changeEmailCodeExpire',
       ]);
     if (findedDoc === null) throw new NotFoundException(emailNotFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
@@ -285,7 +303,7 @@ export class ParentService {
       lastLoginDate: { $lte: date },
     });
     if (inactiveAccounts.length) {
-      console.log('deleted accounts')
+      console.log('deleted accounts');
       console.log(inactiveAccounts);
       await Promise.all(
         inactiveAccounts.map((acc) => this.deleteAccount(acc.email)),

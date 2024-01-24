@@ -13,6 +13,17 @@ services:
       MONGO_INITDB_DATABASE: mnv
     volumes:
       - mongodata:/data/db
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - redisdata:/root/redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASS}
+    
 
 volumes:
   mongodata:
+  redisdata:

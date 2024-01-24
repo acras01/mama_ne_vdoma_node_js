@@ -24,6 +24,9 @@ export class Group {
   // TODO fix
   @prop({ required: false })
   week?: unknown;
+
+  @prop({ required: false })
+  karma?: number;
 }
 
 export class askingJoinGroup {

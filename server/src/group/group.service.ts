@@ -19,6 +19,7 @@ import { UpdateGroupGeoDto } from './dto/update-group-geo.dto';
 import { BackblazeService } from 'src/backblaze/backblaze.service';
 import { isNotChild } from './utils/isNotChild';
 import { isChild } from './utils/isChild';
+import { KarmaService } from '../karma/karma.service';
 import {
   alreadyInGroup,
   alreadySendedRequest,
@@ -44,6 +45,8 @@ export class GroupService {
     private readonly backblazeService: BackblazeService,
     private readonly childService: ChildService,
     private readonly notificationService: NotificationsService,
+    @Inject(forwardRef(() => KarmaService))
+    private readonly karmaService: KarmaService,
   ) {}
 
   async createGroup(
@@ -105,6 +108,13 @@ export class GroupService {
   async findById(id: string) {
     const findedDoc = await this.groupModel.findById(id);
     if (findedDoc === null) throw new NotFoundException(notFound);
+    const parentsIds = findedDoc.members.map((v) => v.parentId);
+    const grades = await Promise.all(
+      parentsIds.map((v) => this.karmaService.getUserKarma(v)),
+    );
+    findedDoc.karma = Number(
+      (grades.reduce((acc, v) => acc + v, 0) / grades.length).toFixed(1),
+    );
     return findedDoc;
   }
 
@@ -374,5 +384,17 @@ export class GroupService {
       ),
     );
     return true;
+  }
+
+  async isHaveSharedGroups(parent1, parent2) {
+    const documents = await this.groupModel.find({
+      members: {
+        $all: [
+          { $elemMatch: { parentId: parent1 } },
+          { $elemMatch: { parentId: parent2 } },
+        ],
+      },
+    });
+    return documents.length;
   }
 }
