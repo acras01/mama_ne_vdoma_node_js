@@ -17,7 +17,7 @@ export class KarmaRepository implements OnModuleDestroy {
   }
 
   async set(key: string, value: string): Promise<void> {
-    await this.redisClient.set(`${this.basePrefix}:${key}`, value);
+    await this.redisClient.set(`${this.basePrefix}:${key}`, value, 'EX', 600);
   }
 
   async delete(key: string): Promise<void> {

@@ -8,5 +8,8 @@ export class Karma {
   toId: string;
 
   @prop({ required: true })
-  rate: number;
+  grade: number;
+
+  @prop({ require: true })
+  message: string;
 }

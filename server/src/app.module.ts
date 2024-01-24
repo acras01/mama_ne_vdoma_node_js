@@ -19,6 +19,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { FirebaseModule } from './firebase/firebase.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
+import { KarmaModule } from './karma/karma.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
     GroupModule,
     FirebaseModule,
     NotificationsModule,
+    KarmaModule,
   ],
   controllers: [AppController],
   providers: [
