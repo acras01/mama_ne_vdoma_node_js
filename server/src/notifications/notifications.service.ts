@@ -73,6 +73,7 @@ export class NotificationsService {
   async groupJoiningRequestNotification(
     param: GroupJoiningRequestNotificationParams,
   ) {
+    const adminId = await this.parentService.findByEmail(param.groupAdmin.email)
     this.sendGroupJoiningRequestEmailNotification({
       groupAdminEmail: param.groupAdmin.email,
       parentId: param.payload.userId,
@@ -89,7 +90,7 @@ export class NotificationsService {
     }
     await this.createNotification(
       param.payload.groupId,
-      param.payload.userId,
+      adminId.id,
       FirebaseMessageEnum.USER_GROUP_REQUEST,
     );
   }
