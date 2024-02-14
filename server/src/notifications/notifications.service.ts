@@ -128,7 +128,7 @@ export class NotificationsService {
     });
     await this.createNotification(
       param.groupId,
-      param.parent.email,
+      param.parent.id,
       FirebaseMessageEnum.USER_GROUP_ACCEPTED,
     );
   }

@@ -52,6 +52,7 @@ export interface GroupRequestPushNotificationPayload {
 
 export interface GroupInvitationNotificationParams {
   parent: {
+    id?: string;
     email: string;
     deviceId?: string;
   };
