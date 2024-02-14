@@ -84,7 +84,7 @@ export class NotificationsService {
         deviceId: param.groupAdmin.deviceId,
         payload: {
           groupId: param.payload.groupId,
-          userId: param.payload.parentId,
+          userId: param.payload.userId,
         },
       });
     }
