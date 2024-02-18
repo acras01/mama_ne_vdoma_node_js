@@ -33,7 +33,7 @@ export class KarmaService {
     if (!(await this.groupService.isHaveSharedGroups(fromId, toId))) {
       throw new BadRequestException('Не має спільних груп');
     }
-    await this.karmaModel.create({ fromId, toId, ...createKarmaDto });
+    await this.karmaModel.create({ fromId, toId, ...createKarmaDto, timestamp: Date.now() });
     await this.karmaRepository.delete(toId);
   }
 

@@ -12,4 +12,7 @@ export class Karma {
 
   @prop({ require: true })
   message: string;
+
+  @prop({ require: false })
+  timestamp: Date;
 }
