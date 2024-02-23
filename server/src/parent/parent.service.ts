@@ -90,6 +90,7 @@ export class ParentService {
     parents.forEach((v, i) => {
       parents[i].karma = rates[i];
     });
+
     return parents;
   }
 

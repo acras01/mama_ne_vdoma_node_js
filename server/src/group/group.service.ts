@@ -137,6 +137,7 @@ export class GroupService {
       childId,
       payload: { groupId: groupId, userId: parentId },
     });
+
     await Promise.all([parent.save(), group.save()]);
   }
 
