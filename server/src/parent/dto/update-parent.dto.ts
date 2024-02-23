@@ -1,52 +1,59 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsDefined,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsObject,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { WeekDto } from '../../shared/dto/week.dto';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsOptional, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
+import { WeekDto } from '../../shared/dto/week.dto'
+import { MatchesCustom } from '../../shared/decorators/matchesCustom'
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
+import { IsBooleanCustom } from '../../shared/decorators/isBooleanCustom'
+import { IsDefinedCustom } from '../../shared/decorators/isDefinedCustom'
+import { IsNotEmptyObjectCustom } from '../../shared/decorators/isNotEmptyObjectCustom'
+import { IsObjectCustom } from '../../shared/decorators/isObjectCustom'
+import { LengthCustom } from '../../shared/decorators/LengthCustom'
 
 export class UpdateParentDto {
   @ApiProperty()
-  @IsString()
-  @Matches(/^[a-zA-Zа-яА-Яі0-9 -]+$/gm, { message: 'Must include only letters,- or space' })
-  @IsNotEmpty()
-  @Length(2, 18)
+  @IsStringCustom()
+  @MatchesCustom()
+  @IsNotEmptyCustom()
+  @LengthCustom(2, 18)
   @IsOptional()
-  name: string;
+  name: string
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
-  phone: string;
+  phone: string
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   @IsOptional()
-  sendingEmails: boolean;
+  sendingEmails: boolean
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
-  countryCode: string;
+  countryCode: string
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   @IsOptional()
-  avatar: string;
+  deviceId: string
+  @ApiProperty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
+  @IsOptional()
+  avatar: string
+  @ApiProperty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
+  @IsOptional()
+  note: string;
   @ApiProperty({ type: WeekDto })
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => WeekDto)
   @IsOptional()
-  week: WeekDto;
+  week: WeekDto
 }

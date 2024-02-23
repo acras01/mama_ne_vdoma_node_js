@@ -26,6 +26,9 @@ import {
   notFound,
   wrongCode,
 } from './utils/errors';
+import { FirebaseMessageEnumType } from 'src/firebase/interfaces/messages.interface';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { KarmaService } from '../karma/karma.service';
 
 export class ParentService {
   constructor(
@@ -38,17 +41,22 @@ export class ParentService {
     @Inject(forwardRef(() => GroupService))
     private groupService: GroupService,
     private readonly backblazeService: BackblazeService,
+    private readonly karmaService: KarmaService,
   ) {}
 
   async findByEmail(email: string) {
     const findedDoc = await this.parentModel.findOne({ email });
     if (findedDoc === null) throw new NotFoundException(emailNotFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
   async findByNickName(nick: string) {
     const findedDoc = await this.parentModel.findOne({ name: nick });
     if (findedDoc === null) throw new NotFoundException(accountNotFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
@@ -60,6 +68,8 @@ export class ParentService {
   async findById(id: string) {
     const findedDoc = await this.parentModel.findById(id);
     if (findedDoc === null) throw new NotFoundException(notFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
@@ -72,6 +82,15 @@ export class ParentService {
         throw new NotFoundException(`Parent ID ${id} not found`);
       }
     }
+
+    const rates = await Promise.all(
+      parents.map((parent) => this.karmaService.getUserKarma(parent.id)),
+    );
+    
+    parents.forEach((v, i) => {
+      parents[i].karma = rates[i];
+    });
+
     return parents;
   }
 
@@ -88,6 +107,8 @@ export class ParentService {
         'changeEmailCodeExpire',
       ]);
     if (findedDoc === null) throw new NotFoundException(emailNotFound);
+    const karma = await this.karmaService.getUserKarma(findedDoc.id);
+    findedDoc.karma = karma;
     return findedDoc;
   }
 
@@ -218,17 +239,6 @@ export class ParentService {
     return await this.findByEmail(email);
   }
 
-  async deleteParent(email: string) {
-    // todo add security
-    const parent = await this.parentModel.findOne({ email });
-    if (parent === null) {
-      return false;
-    } else {
-      await this.deleteAccount(parent.email);
-      return true;
-    }
-  }
-
   async deleteAccount(email: string) {
     const parent = await this.findByEmail(email);
     if (parent.avatar) await this.backblazeService.deleteFile(parent.avatar);
@@ -236,6 +246,16 @@ export class ParentService {
     await this.childService.deleteChilds(parent.id);
     await parent.deleteOne();
     return true;
+  }
+
+  async registerWithGoogle(email: string) {
+    const parent = await this.parentModel.create({
+      password: 'google',
+      email: email,
+      isConfirmed: true,
+      sendingEmails: true,
+    });
+    return parent;
   }
 
   private generateFourDigitCode() {
@@ -252,5 +272,43 @@ export class ParentService {
       return true;
     }
     return null;
+  }
+
+  async addNotification(
+    groupId: string,
+    parentId: string,
+    notificationType: FirebaseMessageEnumType,
+  ) {
+    const parent = await this.findById(parentId);
+    const currentTime = Math.floor(new Date().getTime() / 1000);
+    const notification = {
+      groupId: groupId,
+      notificationType: notificationType,
+      creatingTime: currentTime,
+    };
+    parent.notifications.push(notification);
+    parent.save();
+  }
+
+  async removeNotifications(parentId: string) {
+    const parent = await this.findById(parentId);
+    parent.notifications = [];
+    parent.save();
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  private async deleteInactiveAccounts() {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 6);
+    const inactiveAccounts = await this.parentModel.find({
+      lastLoginDate: { $lte: date },
+    });
+    if (inactiveAccounts.length) {
+      console.log('deleted accounts');
+      console.log(inactiveAccounts);
+      await Promise.all(
+        inactiveAccounts.map((acc) => this.deleteAccount(acc.email)),
+      );
+    }
   }
 }

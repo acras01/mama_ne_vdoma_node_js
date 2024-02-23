@@ -1,3 +1,4 @@
+import { ParentService } from './../parent/parent.service';
 import {
   BadRequestException,
   Injectable,
@@ -5,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
-import { ParentService } from 'src/parent/parent.service';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
@@ -13,8 +13,8 @@ import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from '../mail/dto/reset-password.dto';
 import {
   wrongCredentials,
-  notConfrimedAccount,
   emailAlreadyTaken,
+  notConfrimedAccount,
 } from './utils/errors';
 
 @Injectable()
@@ -51,6 +51,15 @@ export class AuthService {
     return await this.parentService.createParent(registerDto);
   }
 
+  async getAuthenticatedUser(email: string, password: string) {
+    const parent = await this.parentService.findFullInfoByEmail(email);
+    const isPasswordCorrect = await bcrypt.compare(password, parent.password);
+    if (!isPasswordCorrect)
+      throw new UnauthorizedException('Wrong credentials');
+    if (!parent.isConfirmed) throw new BadRequestException(notConfrimedAccount);
+    return parent;
+  }
+
   async confirmEmail(confirmEmailDto: ConfirmEmailDto) {
     await this.parentService.confirmAccountByCode(confirmEmailDto);
     const parent = await this.parentService.findFullInfoByEmail(
@@ -64,7 +73,10 @@ export class AuthService {
   }
 
   async getMe(email: string) {
-    return await this.parentService.findByEmail(email);
+    const parent = await this.parentService.findByEmail(email);
+    parent.lastLoginDate = new Date();
+    parent.save();
+    return parent
   }
 
   async sendResetPasswordCode(
@@ -91,5 +103,16 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     await this.parentService.resetPassword(resetPasswordDto);
     return true;
+  }
+
+  async handleGoogleCode(code: string) {
+    const data = this.jwtService.decode(code, {});
+    if (data === null) throw new BadRequestException('Something wrong');
+    const email = data['email'];
+    if (!(await this.parentService.isEmailAvaliable(email))) {
+      return this.parentService.findFullInfoByEmail(email);
+    } else {
+      return await this.parentService.registerWithGoogle(email);
+    }
   }
 }

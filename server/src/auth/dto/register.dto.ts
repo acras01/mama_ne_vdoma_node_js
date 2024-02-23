@@ -1,11 +1,13 @@
+import { IsNotEmptyEmailCustom } from '../../shared/decorators/isNotEmptyEmailCustom'
+import { IsEmailCustom } from '../../shared/decorators/isEmailCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
+import { PasswordDto } from './../../shared/dto/password.dto'
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
-import { PasswordDto } from 'src/shared/dto/password.dto'
 
 export class RegisterDto extends PasswordDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  @IsEmail()
+  @IsStringCustom()
+  @IsEmailCustom()
+  @IsNotEmptyEmailCustom()
   email: string
 }

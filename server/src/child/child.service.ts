@@ -23,7 +23,6 @@ export class ChildService {
   }
 
   async addChild(createChildDto: CreateChildDto, parent: string) {
-    console.log(parent);
     const child = await this.childModel.create({
       ...createChildDto,
       parentId: parent,

@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom'
+import { IsStringCustom } from '../../shared/decorators/isStringCustom'
 
 export class CodeDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  code: string;
+  @IsNotEmptyCustom()
+  @IsStringCustom()
+  code: string
 }

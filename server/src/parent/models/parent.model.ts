@@ -1,6 +1,7 @@
 import { index, prop } from '@typegoose/typegoose';
 import { ValidateNested } from 'class-validator';
 import { Location } from '../../shared/models/location.model';
+import { FirebaseMessageEnumType } from 'src/firebase/interfaces/messages.interface';
 
 @index({ location: '2dsphere' })
 export class Parent {
@@ -25,6 +26,9 @@ export class Parent {
   @ValidateNested({ each: true })
   @prop({ _id: false, required: false, type: () => [Location] })
   location?: Location;
+
+  @prop({ default: false })
+  isGoogle: boolean;
 
   @prop({ required: false, select: false })
   activationCode?: string;
@@ -56,6 +60,25 @@ export class Parent {
   // TODO fix
   @prop({ required: false })
   week: unknown;
+
+  @prop({ requried: false })
+  deviceId: string;
+
+  @prop({ requried: false })
+  note: string;
+
+  @prop({ required: false })
+  notifications: {
+    groupId: string;
+    notificationType: FirebaseMessageEnumType;
+    creatingTime: number;
+  }[];
+
+  @prop({ required: false })
+  lastLoginDate: Date;
+
+  @prop({ required: false, default: 0 })
+  karma: number;
 }
 
 export class IGroupJoinRequest {

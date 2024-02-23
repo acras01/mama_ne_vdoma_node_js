@@ -1,72 +1,70 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsDefined,
-  IsNotEmptyObject,
-  IsObject,
-  ValidateNested,
-} from 'class-validator';
+import { ValidateNested } from 'class-validator';
+import { IsBooleanCustom } from 'src/shared/decorators/isBooleanCustom';
+import { IsDefinedCustom } from 'src/shared/decorators/isDefinedCustom';
+import { IsNotEmptyObjectCustom } from 'src/shared/decorators/isNotEmptyObjectCustom';
+import { IsObjectCustom } from 'src/shared/decorators/isObjectCustom';
 
 export class DayDto {
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   morning: boolean;
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   lunch: boolean;
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   evening: boolean;
 }
 
 export class WeekDto {
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   monday: DayDto;
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   tuesday: DayDto;
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   wednesday: DayDto;
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   thursday: DayDto;
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   friday: DayDto;
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   saturday: DayDto;
   @ApiProperty()
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
+  @IsDefinedCustom()
+  @IsNotEmptyObjectCustom()
+  @IsObjectCustom()
   @ValidateNested()
   @Type(() => DayDto)
   sunday: DayDto;

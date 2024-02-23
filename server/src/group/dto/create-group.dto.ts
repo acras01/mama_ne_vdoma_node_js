@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmptyCustom } from '../../shared/decorators/isNotEmptyCustom';
+import { IsStringCustom } from '../../shared/decorators/isStringCustom';
 
 export class CreateGroupDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   name: string;
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsStringCustom()
+  @IsNotEmptyCustom()
   desc: string;
 }

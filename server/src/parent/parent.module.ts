@@ -7,6 +7,7 @@ import { ParentController } from './parent.controller';
 import { ChildModule } from 'src/child/child.module';
 import { GroupModule } from '../group/group.module';
 import { BackblazeModule } from 'src/backblaze/backblaze.module';
+import { KarmaModule } from 'src/karma/karma.module';
 
 @Module({
   controllers: [ParentController],
@@ -16,6 +17,7 @@ import { BackblazeModule } from 'src/backblaze/backblaze.module';
     forwardRef(() => MailModule),
     forwardRef(() => ChildModule),
     forwardRef(() => GroupModule),
+    KarmaModule,
   ],
   providers: [ParentService],
   exports: [ParentService],
