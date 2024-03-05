@@ -20,6 +20,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { LoggerInterceptor } from './shared/interceptors/logger.interceptor';
 import { KarmaModule } from './karma/karma.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { KarmaModule } from './karma/karma.module';
     FirebaseModule,
     NotificationsModule,
     KarmaModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [
