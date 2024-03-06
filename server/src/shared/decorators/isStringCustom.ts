@@ -1,4 +1,8 @@
-import { registerDecorator, ValidationOptions } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+} from 'class-validator';
 
 export function IsStringCustom(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -11,8 +15,8 @@ export function IsStringCustom(validationOptions?: ValidationOptions) {
         validate(value: any) {
           return typeof value === 'string' || value instanceof String;
         },
-        defaultMessage() {
-          return 'Значення має бути строкою';
+        defaultMessage(args: ValidationArguments) {
+          return `Значення ${args.property} має бути строкою`;
         },
       },
     });
