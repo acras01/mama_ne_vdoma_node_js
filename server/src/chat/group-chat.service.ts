@@ -20,7 +20,7 @@ export class GroupChatService {
   private async checkBelongsToChat(chatId, userId) {
     const group = await this.groupService.findById(chatId);
     if (!group.members.some((el) => el.parentId === userId)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Нема доступу до цього чату');
     }
     return group;
   }
