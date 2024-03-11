@@ -12,15 +12,18 @@ import { Server, Socket } from 'socket.io';
 import { GroupService } from '../group/group.service';
 import { GroupChatService } from './group-chat.service';
 import { MessageDto } from './dto/message.dto';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GetMessagesDto } from './dto/getMessages.dto';
+import { AllExceptionsFilter } from './filters/ws-filter';
 
-@WebSocketGateway({})
+@WebSocketGateway()
+@UseFilters(new AllExceptionsFilter())
 @UsePipes(
   new ValidationPipe({
     exceptionFactory(validationErrors = []) {
       if (this.isDetailedOutputDisabled) return new WsException('Bad request');
       const errors = this.flattenValidationErrors(validationErrors);
+      console.log(errors);
       return new WsException(errors);
     },
   }),
@@ -78,6 +81,7 @@ export class ChatGateway implements OnGatewayConnection {
       userId,
       getMessagesDto.from,
     );
+    msgs.reverse();
     socket.emit('get-messages', msgs);
   }
 }
