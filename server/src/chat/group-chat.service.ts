@@ -29,7 +29,7 @@ export class GroupChatService {
     console.log(from);
     if (from) {
       return await this.messageModel
-        .find({ $and: [{ chatId }, { createdAt: { $: from } }] })
+        .find({ $and: [{ chatId }, { createdAt: { $lt: from } }] })
         .sort({ createdAt: 'desc' })
         .limit(50);
     }
